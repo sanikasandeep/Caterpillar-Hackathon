@@ -1,0 +1,1770 @@
+<!doctype html>
+<html lang="en" data-cat-version="2028.1" data-agent-entry="#agents">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caterpillar 2028 — Building a world that runs cleaner</title>
+<meta name="description" content="Caterpillar 2028 concept homepage. One page, dark by default, every image readable as text, and a built-in accessibility tree API for AI agents.">
+<meta name="color-scheme" content="dark light">
+<meta name="agent-instructions" content="This page exposes a machine-readable accessibility tree. Call window.CAT.help() in the console, or read the JSON in #cat-page-manifest. No dropdown menus: every destination is on this page.">
+<link rel="alternate" type="application/json" href="#cat-page-manifest" title="Machine-readable page manifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,75..125,400..900;1,75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   Dark is the default ground. Light and high-contrast are user
+   choices, driven by radio inputs with :has() — no script.
+   ============================================================ */
+:root{
+  --void:#000000;
+  --iron:#12110C;
+  --iron-2:#1B1912;
+  --cat:#FFCD11;
+  --amber:#C98A06;
+  --paint:#F3EFE3;
+  --dust:#8F897A;
+  --seam:#2B2720;
+  --focus:#FFCD11;
+  --stripe-a:#FFCD11;
+  --stripe-b:#000000;
+  --panel-text:var(--paint);
+  --measure:66ch;
+  --pad:clamp(1.25rem,4vw,4.5rem);
+  color-scheme:dark;
+}
+:root:has(#mode-light:checked){
+  --void:#F3EFE3;
+  --iron:#FFFFFF;
+  --iron-2:#EFEADB;
+  --cat:#7A5D00;
+  --amber:#8A6A00;
+  --paint:#14130E;
+  --dust:#5B564B;
+  --seam:#CFC8B4;
+  --focus:#14130E;
+  --stripe-a:#C9A227;
+  --stripe-b:#14130E;
+  color-scheme:light;
+}
+:root:has(#mode-contrast:checked){
+  --void:#000000;
+  --iron:#000000;
+  --iron-2:#000000;
+  --cat:#FFE14D;
+  --amber:#FFE14D;
+  --paint:#FFFFFF;
+  --dust:#FFFFFF;
+  --seam:#FFE14D;
+  --focus:#FFFFFF;
+  --stripe-a:#FFE14D;
+  --stripe-b:#000000;
+  color-scheme:dark;
+}
+:root:has(#mode-contrast:checked) .panel,
+:root:has(#mode-contrast:checked) .tile{border-width:2px}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5.5rem;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--paint);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-variation-settings:"wdth" 100,"wght" 400;
+  font-size:clamp(1rem,.95rem + .25vw,1.125rem);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+img,svg{max-width:100%}
+
+/* ---------- typography ---------- */
+h1,h2,h3,h4{margin:0 0 .5em;line-height:1.02;letter-spacing:-.025em;text-wrap:balance}
+h1{font-variation-settings:"wdth" 118,"wght" 850;font-size:clamp(2.75rem,1.5rem + 6.2vw,7.5rem)}
+h2{font-variation-settings:"wdth" 112,"wght" 800;font-size:clamp(1.9rem,1.2rem + 2.6vw,3.6rem)}
+h3{font-variation-settings:"wdth" 106,"wght" 700;font-size:clamp(1.15rem,1rem + .7vw,1.6rem);letter-spacing:-.015em}
+h4{font-variation-settings:"wdth" 104,"wght" 700;font-size:1.02rem;letter-spacing:-.005em}
+p{margin:0 0 1em;max-width:var(--measure)}
+a{color:var(--cat);text-underline-offset:.22em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+small{font-size:.83rem;color:var(--dust)}
+.lead{font-size:clamp(1.1rem,1rem + .7vw,1.45rem);color:var(--paint);max-width:58ch;line-height:1.45}
+.dim{color:var(--dust)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.83rem;letter-spacing:-.01em}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+/* ---------- focus & skip ---------- */
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:2px}
+.skip{position:fixed;top:0;left:0;z-index:999;display:flex;gap:.5rem;padding:.5rem}
+.skip a{
+  position:absolute;left:-9999px;background:var(--cat);color:#000;
+  padding:.7rem 1.1rem;font-weight:700;text-decoration:none;border-radius:3px
+}
+.skip a:focus{position:static;left:auto}
+.sr-only{
+  position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0
+}
+
+/* ---------- hazard seam: the one decorative motif ---------- */
+.seam{
+  height:12px;border:0;margin:0;
+  background:repeating-linear-gradient(115deg,var(--stripe-a) 0 16px,var(--stripe-b) 16px 32px);
+}
+.seam--thin{height:6px}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.masthead{
+  position:sticky;top:0;z-index:80;
+  background:color-mix(in srgb,var(--void) 90%,transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--seam);
+}
+.masthead__row{
+  display:flex;align-items:center;gap:1rem clamp(.75rem,2vw,1.75rem);
+  flex-wrap:wrap;padding:.6rem var(--pad);
+}
+.wordmark{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--paint);margin-right:auto}
+.wordmark__mark{
+  font-variation-settings:"wdth" 125,"wght" 900;
+  font-size:1.5rem;letter-spacing:-.05em;line-height:1;
+  background:var(--cat);color:#000;padding:.18em .32em .26em;border-radius:2px;
+}
+:root:has(#mode-light:checked) .wordmark__mark{background:#14130E;color:#FFCD11}
+.wordmark__sub{font-size:.7rem;line-height:1.1;color:var(--dust);max-width:11ch}
+
+.nav{display:flex;gap:clamp(.5rem,1.6vw,1.4rem);flex-wrap:wrap;align-items:center}
+.nav a{
+  color:var(--paint);text-decoration:none;font-weight:600;font-size:.92rem;
+  padding:.45rem .1rem;border-bottom:2px solid transparent;white-space:nowrap
+}
+.nav a:hover,.nav a:focus-visible{border-bottom-color:var(--cat);color:var(--cat)}
+.nav a[data-primary]{color:var(--cat)}
+
+.switches{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.switch{
+  display:inline-flex;align-items:center;gap:.4rem;
+  border:1px solid var(--seam);border-radius:999px;padding:.32rem .7rem;
+  font-size:.8rem;font-weight:600;cursor:pointer;background:transparent;color:var(--paint)
+}
+.switch input{accent-color:var(--cat);width:1rem;height:1rem;margin:0;cursor:pointer}
+.switch:hover{border-color:var(--cat)}
+:root:has(#textview:checked) .switch--text{background:var(--cat);color:#000;border-color:var(--cat)}
+fieldset.modes{
+  display:flex;align-items:center;gap:.35rem;margin:0;padding:.22rem .5rem;
+  border:1px solid var(--seam);border-radius:999px
+}
+fieldset.modes legend{font-size:.72rem;color:var(--dust);padding:0 .3rem}
+fieldset.modes label{display:inline-flex;align-items:center;gap:.25rem;font-size:.78rem;cursor:pointer}
+fieldset.modes input{accent-color:var(--cat);margin:0}
+
+/* ============================================================
+   HERO — the one place boldness is spent
+   ============================================================ */
+.hero{position:relative;border-bottom:1px solid var(--seam);overflow:hidden;background:var(--void)}
+.hero__grid{
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+  gap:clamp(1.5rem,4vw,4rem);align-items:center;
+  padding:clamp(2.25rem,6vw,5.5rem) var(--pad) clamp(1.5rem,3vw,2.5rem);
+  max-width:1680px;margin-inline:auto;
+}
+.hero__eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;margin-bottom:1.1rem;
+  font-weight:700;font-size:.85rem;color:#000;background:var(--cat);
+  padding:.35rem .8rem;border-radius:2px
+}
+:root:has(#mode-contrast:checked) .hero__eyebrow{color:#000;background:var(--cat)}
+.hero h1{margin-bottom:.35em}
+.hero h1 .line{display:block}
+.hero h1 .line--out{color:var(--cat)}
+
+/* moving text: a vertical word cycler, CSS only */
+.cycler{
+  display:inline-grid;vertical-align:bottom;overflow:hidden;
+  height:1.05em;min-width:9ch;
+}
+.cycler>span{
+  grid-area:1/1;display:block;color:var(--cat);
+  animation:cycle 12s steps(1,end) infinite;opacity:0
+}
+.cycler>span:nth-child(1){animation-delay:0s}
+.cycler>span:nth-child(2){animation-delay:3s}
+.cycler>span:nth-child(3){animation-delay:6s}
+.cycler>span:nth-child(4){animation-delay:9s}
+@keyframes cycle{
+  0%{opacity:0;transform:translateY(48%)}
+  2%,23%{opacity:1;transform:translateY(0)}
+  25%,100%{opacity:0;transform:translateY(-48%)}
+}
+
+.hero__actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.6rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-weight:700;font-size:.95rem;text-decoration:none;
+  padding:.85rem 1.4rem;border-radius:3px;border:2px solid var(--cat);
+  background:var(--cat);color:#000;cursor:pointer;font-family:inherit
+}
+.btn:hover{background:transparent;color:var(--cat)}
+.btn--ghost{background:transparent;color:var(--cat)}
+.btn--ghost:hover{background:var(--cat);color:#000}
+:root:has(#mode-light:checked) .btn{color:#FFF;background:#14130E;border-color:#14130E}
+:root:has(#mode-light:checked) .btn:hover{color:#14130E;background:transparent}
+:root:has(#mode-light:checked) .btn--ghost{background:transparent;color:#14130E}
+/* Light mode inverts the accent, so anything that sat as black-on-yellow in
+   dark mode has to flip to white-on-dark-gold or it drops below 4.5:1. */
+:root:has(#mode-light:checked) .hero__eyebrow{background:#14130E;color:#F3EFE3}
+:root:has(#mode-light:checked) .switch--text{color:#FFFFFF}
+:root:has(#mode-light:checked) .brands a:hover{background:#14130E;color:#F3EFE3}
+:root:has(#mode-light:checked) .brands a:hover span{color:#D8D2C2}
+/* The console stays dark in light mode, so its controls must not follow the
+   page-level light button override. */
+:root:has(#mode-light:checked) .console .btn--ghost{color:#FFCD11;border-color:#FFCD11;background:transparent}
+:root:has(#mode-light:checked) .console .btn--ghost:hover{background:#FFCD11;color:#14130E}
+:root:has(#mode-light:checked) .console .btn:not(.btn--ghost){background:#FFCD11;color:#14130E;border-color:#FFCD11}
+
+/* ticker */
+.ticker{
+  border-top:1px solid var(--seam);border-bottom:1px solid var(--seam);
+  background:var(--iron);overflow:hidden;position:relative
+}
+.ticker__track{display:flex;width:max-content;animation:slide 44s linear infinite}
+.ticker__item{
+  display:flex;align-items:baseline;gap:.5rem;white-space:nowrap;
+  padding:.65rem 1.6rem;border-right:1px solid var(--seam);font-size:.86rem
+}
+.ticker__item b{color:var(--cat);font-variation-settings:"wdth" 110,"wght" 800;font-size:1.02rem}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+main{display:block}
+.section{padding:clamp(2.5rem,6vw,5.5rem) var(--pad);max-width:1680px;margin-inline:auto}
+.section--tight{padding-top:clamp(1.75rem,3vw,2.5rem)}
+.section__head{margin-bottom:clamp(1.5rem,3vw,2.5rem);max-width:70ch}
+.section__num{
+  font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--dust);
+  display:block;margin-bottom:.6rem
+}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(1.5rem,4vw,3.5rem);align-items:start}
+.split--reverse>*:first-child{order:2}
+
+.panel{
+  background:var(--iron);border:1px solid var(--seam);border-radius:4px;
+  padding:clamp(1.1rem,2.4vw,1.8rem)
+}
+.grid{display:grid;gap:1px;background:var(--seam);border:1px solid var(--seam);border-radius:4px;overflow:hidden}
+.grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid--4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tile{background:var(--iron);padding:clamp(1.1rem,2.2vw,1.7rem);display:flex;flex-direction:column;gap:.5rem}
+.tile p{margin:0;font-size:.92rem;color:var(--dust)}
+.tile h3{margin:0}
+
+/* metric readouts */
+.metric{display:grid;gap:.45rem;padding:1rem 0;border-bottom:1px solid var(--seam)}
+.metric:last-child{border-bottom:0}
+.metric__top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.metric__label{font-weight:600;font-size:.95rem}
+.metric__val{
+  font-variation-settings:"wdth" 112,"wght" 800;font-size:1.35rem;color:var(--cat);
+  font-variant-numeric:tabular-nums
+}
+.bar{height:10px;background:var(--iron-2);border:1px solid var(--seam);border-radius:2px;overflow:hidden}
+.bar>i{
+  display:block;height:100%;background:var(--cat);
+  transform-origin:left center;animation:fill 1.6s cubic-bezier(.2,.8,.2,1) both
+}
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.metric small{font-size:.78rem}
+
+/* ============================================================
+   FIGURES — every visual has a text twin
+   ============================================================ */
+figure.viz{margin:0;border:1px solid var(--seam);border-radius:4px;background:var(--iron);overflow:hidden}
+figure.viz>.viz__art{display:block;background:linear-gradient(180deg,var(--iron-2),var(--iron));padding:0}
+figure.viz>.viz__art svg{display:block;width:100%;height:auto}
+.viz__alt{border-top:1px solid var(--seam)}
+.viz__alt>summary{
+  cursor:pointer;padding:.7rem 1rem;font-weight:600;font-size:.88rem;
+  list-style:none;display:flex;align-items:center;gap:.6rem;color:var(--cat)
+}
+.viz__alt>summary::-webkit-details-marker{display:none}
+.viz__alt>summary::before{
+  content:"";width:.75rem;height:.75rem;flex:none;
+  border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+  transform:rotate(-45deg);transition:transform .18s ease
+}
+.viz__alt[open]>summary::before{transform:rotate(45deg)}
+.viz__alt>summary:hover{background:var(--iron-2)}
+.viz__alt .viz__text{padding:0 1rem 1.1rem;font-size:.93rem;color:var(--paint)}
+.viz__alt .viz__text p{max-width:72ch}
+.viz__alt .viz__text dl{display:grid;grid-template-columns:auto 1fr;gap:.25rem 1rem;margin:.6rem 0 0;font-size:.88rem}
+.viz__alt .viz__text dt{color:var(--dust)}
+.viz__alt .viz__text dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* Global text-only view: every figure shows words instead of art. */
+:root:has(#textview:checked) figure.viz>.viz__art{display:none}
+:root:has(#textview:checked) .viz__alt{border-top:0}
+:root:has(#textview:checked) .viz__alt>summary{display:none}
+:root:has(#textview:checked) .viz__alt .viz__text{display:block;padding:1.1rem}
+:root:has(#textview:checked) .viz__text::before{
+  content:"Text description";display:block;font-size:.72rem;color:var(--dust);
+  margin-bottom:.5rem;font-family:"IBM Plex Mono",monospace
+}
+:root:has(#textview:checked) .decor{display:none}
+
+/* ============================================================
+   SVG SCENE ANIMATION (HTML/CSS only)
+   ============================================================ */
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 6s linear infinite}
+.spin--slow{animation-duration:11s}
+.spin--rev{animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.swing{transform-box:fill-box;transform-origin:bottom left;animation:swing 7s ease-in-out infinite alternate}
+@keyframes swing{from{transform:rotate(-7deg)}to{transform:rotate(9deg)}}
+
+.roll{animation:roll 9s linear infinite}
+@keyframes roll{from{transform:translateX(-140px)}to{transform:translateX(1260px)}}
+
+.pulse{animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+
+.rise{animation:rise 5s ease-in-out infinite}
+@keyframes rise{0%{opacity:0;transform:translateY(10px)}35%{opacity:.8}100%{opacity:0;transform:translateY(-34px)}}
+
+.charge{transform-box:fill-box;transform-origin:bottom center;animation:charge 4.5s ease-in-out infinite}
+@keyframes charge{0%{transform:scaleY(.12)}70%{transform:scaleY(1)}100%{transform:scaleY(1)}}
+
+.dash{stroke-dasharray:10 14;animation:dash 2.4s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-48}}
+
+.scan{animation:scan 6s ease-in-out infinite}
+@keyframes scan{0%,100%{transform:translateX(0)}50%{transform:translateX(620px)}}
+
+/* ============================================================
+   AGENT INTERFACE
+   ============================================================ */
+.agent{background:var(--iron);border-top:1px solid var(--seam);border-bottom:1px solid var(--seam)}
+.agent__lead{max-width:72ch}
+.console{
+  margin-top:1.25rem;border:1px solid var(--seam);border-radius:4px;
+  background:var(--void);overflow:hidden
+}
+:root:has(#mode-light:checked) .console{background:#14130E;color:#F3EFE3}
+.console__bar{
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+  padding:.6rem .8rem;border-bottom:1px solid var(--seam);background:var(--iron-2)
+}
+:root:has(#mode-light:checked) .console__bar{background:#1F1D16;border-color:#3A362B}
+.console__title{font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--cat);margin-right:auto}
+:root:has(#mode-light:checked) .console__title{color:#FFCD11}
+.console__out{
+  margin:0;padding:1rem;max-height:26rem;overflow:auto;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.78rem;line-height:1.65;
+  white-space:pre;tab-size:2;color:var(--paint)
+}
+:root:has(#mode-light:checked) .console__out{color:#F3EFE3}
+.console__out .k{color:var(--cat)}
+.console__out .s{color:#9FD2FF}
+.console__out .n{color:#F3EFE3}
+.btn--sm{padding:.4rem .75rem;font-size:.8rem;border-width:1px}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;font-size:.86rem}
+.kv dt{font-family:"IBM Plex Mono",monospace;color:var(--cat)}
+.kv dd{margin:0;color:var(--dust)}
+.api-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.86rem}
+.api-table th,.api-table td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--seam);vertical-align:top}
+.api-table th{color:var(--dust);font-weight:600;font-size:.78rem}
+.api-table code{font-family:"IBM Plex Mono",monospace;color:var(--cat);font-size:.83rem}
+
+/* ============================================================
+   DIRECTORY (replaces every dropdown menu)
+   ============================================================ */
+.directory{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1px;background:var(--seam);border:1px solid var(--seam);border-radius:4px;overflow:hidden}
+.directory section{background:var(--iron);padding:1.2rem}
+.directory h3{font-size:.95rem;margin-bottom:.7rem}
+.directory ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.directory a{font-size:.88rem;color:var(--paint);text-decoration:none;border-bottom:1px solid transparent}
+.directory a:hover,.directory a:focus-visible{color:var(--cat);border-bottom-color:var(--cat)}
+
+/* news */
+.news{display:grid;gap:1px;background:var(--seam);border-top:1px solid var(--seam);border-bottom:1px solid var(--seam)}
+.news article{background:var(--iron);padding:1.3rem clamp(1rem,2vw,1.6rem);display:grid;grid-template-columns:8.5rem 1fr;gap:1.2rem;align-items:start}
+.news time{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--dust)}
+.news h3{margin-bottom:.3rem}
+.news p{margin:0;font-size:.92rem;color:var(--dust)}
+
+/* brands */
+.brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:1px;background:var(--seam);border:1px solid var(--seam);border-radius:4px;overflow:hidden}
+.brands a{
+  background:var(--iron);padding:1.1rem .9rem;text-decoration:none;color:var(--paint);
+  display:flex;flex-direction:column;gap:.2rem;font-weight:700;font-size:.95rem
+}
+.brands a span{font-weight:400;font-size:.76rem;color:var(--dust)}
+.brands a:hover{background:var(--cat);color:#000}
+.brands a:hover span{color:#000}
+
+/* footer */
+.foot{background:var(--void);padding:clamp(2rem,4vw,3.5rem) var(--pad) 2rem;border-top:1px solid var(--seam)}
+.foot__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:2rem;max-width:1680px;margin-inline:auto}
+.foot h3{font-size:.85rem;color:var(--dust);margin-bottom:.7rem}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.foot a{color:var(--paint);text-decoration:none;font-size:.88rem}
+.foot a:hover{color:var(--cat);text-decoration:underline}
+.foot__legal{max-width:1680px;margin:2rem auto 0;padding-top:1.2rem;border-top:1px solid var(--seam);font-size:.8rem;color:var(--dust)}
+
+.notice{
+  border-left:4px solid var(--cat);background:var(--iron);
+  padding:.9rem 1.1rem;font-size:.87rem;color:var(--dust);border-radius:0 3px 3px 0
+}
+.notice strong{color:var(--paint)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1100px){
+  .hero__grid{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
+  .split--reverse>*:first-child{order:0}
+  .grid--4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .grid--3,.grid--4{grid-template-columns:1fr}
+  .news article{grid-template-columns:1fr;gap:.4rem}
+  .masthead__row{gap:.6rem}
+  .nav{order:3;width:100%;overflow-x:auto;padding-bottom:.2rem}
+  .wordmark__sub{display:none}
+}
+
+/* ============================================================
+   MOTION PREFERENCES — system setting, plus an in-page control
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+  .cycler>span{animation:none!important;opacity:0!important}
+  .cycler>span:nth-child(1){opacity:1!important}
+  .bar>i{transform:scaleX(1)}
+}
+:root:has(#stillness:checked) *{animation-play-state:paused!important}
+:root:has(#stillness:checked) .cycler>span{animation:none!important;opacity:0!important}
+:root:has(#stillness:checked) .cycler>span:nth-child(1){opacity:1!important}
+:root:has(#stillness:checked) .bar>i{transform:scaleX(1)!important;animation:none!important}
+:root:has(#stillness:checked) .ticker__track{animation:none!important}
+@media print{.masthead,.agent,.ticker{display:none}}
+</style>
+</head>
+<body>
+
+<div class="skip">
+  <a href="#main" data-agent-id="skip-main">Skip to main content</a>
+  <a href="#agents" data-agent-id="skip-agents">Skip to agent interface</a>
+  <a href="#directory" data-agent-id="skip-directory">Skip to full site directory</a>
+</div>
+
+<!-- =========================================================
+     HEADER — six destinations, all on this page, no dropdowns
+     ========================================================= -->
+<header class="masthead">
+  <div class="masthead__row">
+    <a class="wordmark" href="#top" data-agent-id="home" data-agent-action="scroll to top of page">
+      <span class="wordmark__mark" aria-hidden="true">CAT</span>
+      <span class="sr-only">Caterpillar home</span>
+      <span class="wordmark__sub" aria-hidden="true">Caterpillar Inc. 2028</span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a href="#sustainability" data-primary data-agent-id="nav-sustainability">Sustainability</a>
+      <a href="#build" data-agent-id="nav-build">What we build</a>
+      <a href="#technology" data-agent-id="nav-technology">Technology</a>
+      <a href="#company" data-agent-id="nav-company">Company &amp; investors</a>
+      <a href="#careers" data-agent-id="nav-careers">Careers</a>
+      <a href="#agents" data-agent-id="nav-agents">Agent interface</a>
+    </nav>
+
+    <div class="switches" role="group" aria-label="Display controls">
+      <label class="switch switch--text" for="textview">
+        <input type="checkbox" id="textview" data-agent-id="toggle-textview"
+               data-agent-action="replace every illustration with its written description">
+        Text view
+      </label>
+      <label class="switch" for="stillness">
+        <input type="checkbox" id="stillness" data-agent-id="toggle-stillness"
+               data-agent-action="pause all animation on the page">
+        Stop motion
+      </label>
+      <fieldset class="modes">
+        <legend>Display mode</legend>
+        <label for="mode-dark"><input type="radio" name="mode" id="mode-dark" checked data-agent-id="mode-dark"> Dark</label>
+        <label for="mode-light"><input type="radio" name="mode" id="mode-light" data-agent-id="mode-light"> Light</label>
+        <label for="mode-contrast"><input type="radio" name="mode" id="mode-contrast" data-agent-id="mode-contrast"> High contrast</label>
+      </fieldset>
+    </div>
+  </div>
+</header>
+
+<hr class="seam seam--thin" aria-hidden="true">
+
+<main id="main">
+<a id="top" tabindex="-1"></a>
+
+<!-- =========================================================
+     BANNER 1 — SUSTAINABILITY
+     ========================================================= -->
+<section class="hero" id="banner-sustainability" aria-labelledby="hero-h">
+  <div class="hero__grid">
+    <div>
+      <p class="hero__eyebrow">Banner 1 of 1 &middot; 2028 sustainability commitment</p>
+      <h1 id="hero-h">
+        <span class="line">We move</span>
+        <span class="line">the world.</span>
+        <span class="line line--out">Now we move it
+          <span class="sr-only">cleaner, quieter, electric and circular.</span>
+          <span class="cycler" aria-hidden="true">
+            <span>cleaner.</span><span>quieter.</span><span>electric.</span><span>circular.</span>
+          </span>
+        </span>
+      </h1>
+      <p class="lead">Caterpillar's 2030 goals commit the company to cutting operating emissions, sending rebuilt parts back to work instead of to landfill, and offering a lower-carbon option across every major product line. Here is where the 2028 scenario stands.</p>
+      <div class="hero__actions">
+        <a class="btn" href="#sustainability" data-agent-id="cta-goals" data-agent-action="jump to the 2030 goals section">See the 2030 goals</a>
+        <a class="btn btn--ghost" href="#agents" data-agent-id="cta-agents" data-agent-action="jump to the accessibility tree API">Open the agent interface</a>
+      </div>
+    </div>
+
+    <figure class="viz" id="fig-hero">
+      <div class="viz__art decor">
+        <svg viewBox="0 0 1200 560" role="img" aria-labelledby="heroArtT heroArtD">
+          <title id="heroArtT">An electric quarry at first light</title>
+          <desc id="heroArtD">Illustration of a working site powered by wind and battery charging, with an electric excavator, an autonomous haul truck and a survey drone. A full written description is available below the image.</desc>
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0A0906"/><stop offset="1" stop-color="#1D1A12"/>
+            </linearGradient>
+            <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="var(--cat)" stop-opacity=".30"/>
+              <stop offset="1" stop-color="var(--cat)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <rect width="1200" height="560" fill="url(#sky)"/>
+          <g opacity=".18" stroke="var(--cat)" stroke-width="1">
+            <path d="M0 120h1200M0 240h1200M0 360h1200"/>
+            <path d="M200 0v560M500 0v560M800 0v560M1100 0v560"/>
+          </g>
+
+          <circle cx="1010" cy="150" r="96" fill="url(#glow)"/>
+          <circle cx="1010" cy="150" r="30" fill="var(--cat)" opacity=".55" class="pulse"/>
+
+          <path d="M0 400 L180 330 L330 392 L520 336 L720 400 L900 350 L1200 404 L1200 440 L0 440Z" fill="#141209"/>
+
+          <!-- wind turbines -->
+          <g transform="translate(120,205)">
+            <rect x="-4" y="0" width="8" height="200" fill="#2E2A20"/>
+            <g class="spin spin--slow">
+              <rect x="-3.5" y="-78" width="7" height="78" rx="3.5" fill="#4A4536"/>
+              <rect x="-3.5" y="-78" width="7" height="78" rx="3.5" fill="#4A4536" transform="rotate(120)"/>
+              <rect x="-3.5" y="-78" width="7" height="78" rx="3.5" fill="#4A4536" transform="rotate(240)"/>
+              <circle r="8" fill="var(--cat)"/>
+            </g>
+          </g>
+          <g transform="translate(268,250)">
+            <rect x="-3" y="0" width="6" height="158" fill="#2E2A20"/>
+            <g class="spin spin--rev">
+              <rect x="-2.6" y="-56" width="5.2" height="56" rx="2.6" fill="#3E3A2D"/>
+              <rect x="-2.6" y="-56" width="5.2" height="56" rx="2.6" fill="#3E3A2D" transform="rotate(120)"/>
+              <rect x="-2.6" y="-56" width="5.2" height="56" rx="2.6" fill="#3E3A2D" transform="rotate(240)"/>
+              <circle r="6" fill="var(--cat)" opacity=".8"/>
+            </g>
+          </g>
+
+          <!-- survey drone on a scanning pass -->
+          <g class="scan">
+            <g transform="translate(300,120)">
+              <rect x="-22" y="-5" width="44" height="10" rx="5" fill="#4A4536"/>
+              <circle cx="-26" cy="-6" r="10" fill="none" stroke="var(--cat)" stroke-width="2" opacity=".7"/>
+              <circle cx="26" cy="-6" r="10" fill="none" stroke="var(--cat)" stroke-width="2" opacity=".7"/>
+              <path d="M0 6 L0 58" stroke="var(--cat)" stroke-width="2" class="dash" opacity=".85"/>
+            </g>
+          </g>
+
+          <!-- ground plane -->
+          <rect y="440" width="1200" height="120" fill="#0C0B07"/>
+          <path d="M0 440h1200" stroke="#3A362B" stroke-width="2"/>
+          <path d="M40 486h1120" stroke="var(--cat)" stroke-width="2" class="dash" opacity=".45"/>
+
+          <!-- electric excavator -->
+          <g transform="translate(470,0)">
+            <g class="swing">
+              <path d="M170 352 L302 244 L322 268 L190 376 Z" fill="var(--cat)"/>
+              <path d="M302 244 L386 318 L366 340 L282 266 Z" fill="var(--amber)"/>
+              <path d="M372 326 l40 14 -12 40 -42 -16 z" fill="#4A4536"/>
+            </g>
+            <rect x="26" y="336" width="160" height="66" rx="8" fill="#2E2A20" stroke="#4A4536"/>
+            <rect x="38" y="292" width="80" height="52" rx="6" fill="var(--cat)"/>
+            <rect x="46" y="300" width="62" height="30" rx="3" fill="#0A0906" opacity=".78"/>
+            <path d="M150 344 l-12 22 h10 l-8 20 20 -26 h-10 z" fill="var(--cat)"/>
+            <rect x="10" y="404" width="200" height="38" rx="19" fill="#211E17" stroke="#4A4536"/>
+            <circle cx="42" cy="423" r="11" fill="#4A4536"/>
+            <circle cx="110" cy="423" r="11" fill="#4A4536"/>
+            <circle cx="178" cy="423" r="11" fill="#4A4536"/>
+            <g class="rise"><circle cx="105" cy="286" r="4" fill="var(--cat)"/></g>
+          </g>
+
+          <!-- autonomous haul truck crossing the pit floor -->
+          <g class="roll">
+            <g transform="translate(0,468)">
+              <path d="M8 -34 L96 -34 L104 -6 L0 -6 Z" fill="#2E2A20" stroke="#4A4536"/>
+              <rect x="96" y="-30" width="34" height="24" rx="4" fill="var(--cat)"/>
+              <rect x="0" y="-6" width="132" height="10" rx="3" fill="#211E17"/>
+              <circle cx="26" cy="8" r="10" fill="#4A4536"/>
+              <circle cx="108" cy="8" r="10" fill="#4A4536"/>
+              <circle cx="113" cy="-34" r="5" fill="var(--cat)" class="pulse"/>
+            </g>
+          </g>
+
+          <!-- battery charging tower -->
+          <g transform="translate(920,0)">
+            <rect x="34" y="248" width="14" height="194" fill="#2E2A20"/>
+            <rect x="0" y="196" width="84" height="64" rx="6" fill="#211E17" stroke="#4A4536"/>
+            <rect x="12" y="208" width="18" height="40" rx="2" fill="#0A0906" stroke="#4A4536"/>
+            <rect x="12" y="208" width="18" height="40" rx="2" fill="var(--cat)" class="charge"/>
+            <text x="40" y="236" font-family="IBM Plex Mono, monospace" font-size="15" fill="var(--cat)">DC</text>
+            <path d="M40 260 C 40 320, -60 340, -140 372" stroke="var(--cat)" stroke-width="3" fill="none" class="dash" opacity=".8"/>
+          </g>
+        </svg>
+      </div>
+
+      <details class="viz__alt" data-agent-id="alt-hero">
+        <summary>Read this banner as text</summary>
+        <div class="viz__text" id="alt-hero-text">
+          <p><b>What the banner shows.</b> A quarry at first light, running on site-generated power. Two wind turbines turn on the ridge behind the pit. In the foreground an electric hydraulic excavator with a yellow cab works its boom; a lightning mark on the upper structure identifies it as battery-electric. An autonomous haul truck crosses the pit floor from left to right with its beacon lit and no operator in the cab. A survey drone sweeps overhead, dropping a scan line onto the bench below. On the right, a direct-current fast-charging tower fills its battery gauge and runs a live cable down to the machine deck.</p>
+          <p><b>What it is meant to say.</b> By 2028 the clean version of the jobsite is not a prototype parked in a showroom. It is the ordinary working configuration: renewable power generated on site, stored in a battery, drawn down by machines that used to burn diesel, and coordinated by autonomy that cuts idle time.</p>
+          <dl>
+            <dt>Machines shown</dt><dd>Battery-electric excavator, autonomous haul truck, survey drone</dd>
+            <dt>Power shown</dt><dd>Two wind turbines, one DC fast-charging tower</dd>
+            <dt>Time of day</dt><dd>Dawn, shift start</dd>
+            <dt>Motion</dt><dd>Turbine rotors, excavator boom, truck travel, drone pass, charge gauge</dd>
+          </dl>
+        </div>
+      </details>
+    </figure>
+  </div>
+
+  <div class="ticker" role="group" aria-label="2028 scenario indicators">
+    <p class="sr-only">Scrolling indicator strip. Illustrative 2028 scenario values: 62 percent of manufacturing electricity from renewable sources; 148 million pounds of end-of-life material rebuilt and returned to service; 41 battery-electric or hybrid models offered; 3.1 million tonnes of customer emissions avoided; 94 percent of major facilities diverting waste from landfill; 27 percent reduction in operating greenhouse gas intensity against the 2018 baseline.</p>
+    <div class="ticker__track" aria-hidden="true">
+      <div class="ticker__item"><span class="dim">Concept data</span></div>
+      <div class="ticker__item"><b>62%</b> manufacturing electricity from renewables</div>
+      <div class="ticker__item"><b>148M lb</b> material rebuilt and returned to service</div>
+      <div class="ticker__item"><b>41</b> battery-electric or hybrid models offered</div>
+      <div class="ticker__item"><b>3.1 Mt</b> customer emissions avoided</div>
+      <div class="ticker__item"><b>94%</b> facilities diverting waste from landfill</div>
+      <div class="ticker__item"><b>27%</b> lower operating emissions intensity vs. 2018</div>
+      <div class="ticker__item"><span class="dim">Concept data</span></div>
+      <div class="ticker__item"><b>62%</b> manufacturing electricity from renewables</div>
+      <div class="ticker__item"><b>148M lb</b> material rebuilt and returned to service</div>
+      <div class="ticker__item"><b>41</b> battery-electric or hybrid models offered</div>
+      <div class="ticker__item"><b>3.1 Mt</b> customer emissions avoided</div>
+      <div class="ticker__item"><b>94%</b> facilities diverting waste from landfill</div>
+      <div class="ticker__item"><b>27%</b> lower operating emissions intensity vs. 2018</div>
+    </div>
+  </div>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     SUSTAINABILITY
+     ========================================================= -->
+<section class="section" id="sustainability" aria-labelledby="sus-h">
+  <div class="section__head">
+    <span class="section__num">01 / Sustainability</span>
+    <h2 id="sus-h">Progress against the 2030 goals</h2>
+    <p class="lead">Caterpillar publishes goals covering operations, product offerings, circularity and safety. The bars below show a 2028 scenario position for each one.</p>
+  </div>
+
+  <div class="split">
+    <div class="panel" role="group" aria-label="2030 goal progress">
+      <div class="metric">
+        <div class="metric__top"><span class="metric__label">Operating greenhouse gas intensity</span><span class="metric__val num">27%</span></div>
+        <div class="bar"><i style="width:75%" aria-hidden="true"></i></div>
+        <small>Goal: 30% reduction against the 2018 baseline by 2030. Scenario shows 27% achieved.</small>
+      </div>
+      <div class="metric">
+        <div class="metric__top"><span class="metric__label">Renewable electricity in manufacturing</span><span class="metric__val num">62%</span></div>
+        <div class="bar"><i style="width:62%" aria-hidden="true"></i></div>
+        <small>Goal: 100% renewable electricity at Caterpillar facilities by 2030.</small>
+      </div>
+      <div class="metric">
+        <div class="metric__top"><span class="metric__label">Waste diverted from landfill</span><span class="metric__val num">94%</span></div>
+        <div class="bar"><i style="width:94%" aria-hidden="true"></i></div>
+        <small>Goal: 100% of operating facilities designated as landfill-diversion sites.</small>
+      </div>
+      <div class="metric">
+        <div class="metric__top"><span class="metric__label">New products with a lower-carbon option</span><span class="metric__val num">83%</span></div>
+        <div class="bar"><i style="width:83%" aria-hidden="true"></i></div>
+        <small>Goal: every new product introduction is more sustainable than the model it replaces.</small>
+      </div>
+      <div class="metric">
+        <div class="metric__top"><span class="metric__label">Material returned through rebuild</span><span class="metric__val num">148M lb</span></div>
+        <div class="bar"><i style="width:69%" aria-hidden="true"></i></div>
+        <small>Goal: hold or grow the weight of end-of-life material taken back and rebuilt each year.</small>
+      </div>
+    </div>
+
+    <figure class="viz" id="fig-circular">
+      <div class="viz__art decor">
+        <svg viewBox="0 0 640 420" role="img" aria-labelledby="circT circD">
+          <title id="circT">The rebuild loop</title>
+          <desc id="circD">Diagram of a five-stage circular loop from build to take-back. Written description below.</desc>
+          <rect width="640" height="420" fill="#100E09"/>
+          <g class="spin spin--slow" style="transform-origin:320px 210px;transform-box:view-box">
+            <circle cx="320" cy="210" r="132" fill="none" stroke="var(--cat)" stroke-width="3" stroke-dasharray="16 22" opacity=".85"/>
+          </g>
+          <circle cx="320" cy="210" r="108" fill="none" stroke="#3A362B" stroke-width="1"/>
+          <g fill="var(--cat)">
+            <circle cx="320" cy="78" r="10"/><circle cx="446" cy="172" r="10"/>
+            <circle cx="396" cy="330" r="10"/><circle cx="244" cy="330" r="10"/>
+            <circle cx="194" cy="172" r="10"/>
+          </g>
+          <g font-family="Archivo, sans-serif" font-size="17" font-weight="700" fill="#F3EFE3" text-anchor="middle">
+            <text x="320" y="50">Build</text>
+            <text x="500" y="176">Use</text>
+            <text x="404" y="372">Take back</text>
+            <text x="236" y="372">Rebuild</text>
+            <text x="140" y="176">Resell</text>
+          </g>
+          <text x="320" y="200" text-anchor="middle" font-family="Archivo, sans-serif" font-size="40" font-weight="800" fill="var(--cat)">148M</text>
+          <text x="320" y="228" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#8F897A">pounds returned, 2028</text>
+        </svg>
+      </div>
+      <details class="viz__alt" data-agent-id="alt-circular">
+        <summary>Read this diagram as text</summary>
+        <div class="viz__text">
+          <p><b>What the diagram shows.</b> A five-stage loop drawn as a ring with a rotating dashed outer track. The stages run clockwise: <b>Build</b> at the top, then <b>Use</b>, <b>Take back</b>, <b>Rebuild</b>, and <b>Resell</b>, which returns to Build. At the centre is the figure 148 million pounds, labelled as material returned in 2028.</p>
+          <p><b>What it means.</b> A rebuilt component is taken back at the end of its life, restored to the original performance specification, and sold again with a like-new warranty. The customer pays less than for a new part, and the material never becomes waste. The loop is the point: nothing in the diagram terminates.</p>
+          <dl>
+            <dt>Stages</dt><dd>Build, Use, Take back, Rebuild, Resell</dd>
+            <dt>Centre figure</dt><dd>148 million pounds returned in 2028 (concept data)</dd>
+            <dt>Motion</dt><dd>Outer dashed ring rotates clockwise</dd>
+          </dl>
+        </div>
+      </details>
+    </figure>
+  </div>
+
+  <div class="grid grid--3" style="margin-top:2rem">
+    <div class="tile">
+      <h3>Circular economy</h3>
+      <p>Take-back and rebuild programmes that keep end-of-life components in service instead of in the ground.</p>
+      <p><a href="#directory" data-agent-id="link-circular">Where to read more</a></p>
+    </div>
+    <div class="tile">
+      <h3>Climate and energy</h3>
+      <p>Lower-emission engines, battery-electric machines, and power solutions for customers cutting their own footprint.</p>
+      <p><a href="#directory" data-agent-id="link-climate">Where to read more</a></p>
+    </div>
+    <div class="tile">
+      <h3>Operations</h3>
+      <p>Renewable electricity, landfill diversion and water stewardship across Caterpillar's own manufacturing footprint.</p>
+      <p><a href="#directory" data-agent-id="link-operations">Where to read more</a></p>
+    </div>
+  </div>
+
+  <p class="notice" style="margin-top:1.75rem"><strong>About the numbers.</strong> This is an independent concept redesign, not a Caterpillar publication. The 2030 goal categories are real and published by Caterpillar; every 2028 value on this page is an illustrative scenario figure invented for the concept and is flagged as such in the machine-readable manifest.</p>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     WHAT WE BUILD
+     ========================================================= -->
+<section class="section" id="build" aria-labelledby="build-h">
+  <div class="section__head">
+    <span class="section__num">02 / What we build</span>
+    <h2 id="build-h">Machines, engines, power and the people who keep them running</h2>
+    <p class="lead">Construction and mining equipment, off-highway diesel and natural gas engines, industrial gas turbines and diesel-electric locomotives, sold and supported through the Cat dealer network.</p>
+  </div>
+
+  <div class="grid grid--4">
+    <div class="tile"><h3>Construction</h3><p>Excavators, loaders, dozers, compactors and the attachments that go with them.</p></div>
+    <div class="tile"><h3>Mining</h3><p>Surface and underground fleets, plus the autonomy and fleet software that run them.</p></div>
+    <div class="tile"><h3>Energy and transport</h3><p>Engines, gensets, turbines and locomotives for power generation, marine, oil and gas, and rail.</p></div>
+    <div class="tile"><h3>Parts and service</h3><p>Rebuilds, rentals, financing and remote support through dealers in nearly every country.</p></div>
+  </div>
+
+  <h3 style="margin-top:2.5rem">The family of brands</h3>
+  <p class="dim" style="margin-bottom:1rem">Eighteen brands, one page. On the previous site these sat behind a hover menu.</p>
+  <div class="brands">
+    <a href="#directory" data-agent-id="brand-cat">Cat<span>Flagship machines and engines</span></a>
+    <a href="#directory" data-agent-id="brand-cat-financial">Cat Financial<span>Equipment financing</span></a>
+    <a href="#directory" data-agent-id="brand-cat-reman">Cat Reman<span>Rebuilt components</span></a>
+    <a href="#directory" data-agent-id="brand-cat-rentals">Cat Rentals<span>Short-term fleet</span></a>
+    <a href="#directory" data-agent-id="brand-lift-trucks">Cat Lift Trucks<span>Materials handling</span></a>
+    <a href="#directory" data-agent-id="brand-anchor">Anchor<span>Fluid couplings</span></a>
+    <a href="#directory" data-agent-id="brand-asiatrak">AsiaTrak<span>Undercarriage</span></a>
+    <a href="#directory" data-agent-id="brand-fgwilson">FG Wilson<span>Generator sets</span></a>
+    <a href="#directory" data-agent-id="brand-hindustan">Hindustan<span>India-built machines</span></a>
+    <a href="#directory" data-agent-id="brand-mak">MaK<span>Marine engines</span></a>
+    <a href="#directory" data-agent-id="brand-mwm">MWM<span>Gas engines</span></a>
+    <a href="#directory" data-agent-id="brand-olympian">Olympian<span>Generator sets</span></a>
+    <a href="#directory" data-agent-id="brand-perkins">Perkins<span>Off-highway engines</span></a>
+    <a href="#directory" data-agent-id="brand-progress-rail">Progress Rail<span>Rail equipment</span></a>
+    <a href="#directory" data-agent-id="brand-sem">SEM<span>China-built machines</span></a>
+    <a href="#directory" data-agent-id="brand-spm">SPM Oil &amp; Gas<span>Wellsite equipment</span></a>
+    <a href="#directory" data-agent-id="brand-solar-turbines">Solar Turbines<span>Industrial turbines</span></a>
+    <a href="#directory" data-agent-id="brand-turner">Turner Powertrain<span>Transmissions</span></a>
+  </div>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     TECHNOLOGY
+     ========================================================= -->
+<section class="section" id="technology" aria-labelledby="tech-h">
+  <div class="section__head">
+    <span class="section__num">03 / Technology</span>
+    <h2 id="tech-h">Autonomy is the emissions strategy nobody expected</h2>
+    <p class="lead">An autonomous haul cycle holds a tighter line, brakes less and idles less than a human shift can sustain over ten hours. The fuel saved is the same fuel not burned.</p>
+  </div>
+
+  <div class="split split--reverse">
+    <figure class="viz" id="fig-autonomy">
+      <div class="viz__art decor">
+        <svg viewBox="0 0 640 420" role="img" aria-labelledby="autoT autoD">
+          <title id="autoT">Autonomous haul cycle</title>
+          <desc id="autoD">Diagram of a closed haul route with three autonomous trucks and a radar sweep. Written description below.</desc>
+          <rect width="640" height="420" fill="#100E09"/>
+          <ellipse cx="320" cy="230" rx="240" ry="120" fill="none" stroke="var(--cat)" stroke-width="3" class="dash" opacity=".8"/>
+          <g class="spin spin--slow" style="transform-origin:320px 230px;transform-box:view-box" opacity=".35">
+            <path d="M320 230 L560 230 A240 120 0 0 0 320 110 Z" fill="var(--cat)" opacity=".18"/>
+          </g>
+          <g fill="var(--cat)">
+            <rect x="540" y="218" width="36" height="16" rx="3"/>
+            <rect x="196" y="332" width="36" height="16" rx="3"/>
+            <rect x="286" y="102" width="36" height="16" rx="3"/>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#8F897A">
+            <text x="502" y="206">haul</text><text x="176" y="368">dump</text><text x="268" y="92">load</text>
+          </g>
+          <rect x="60" y="34" width="176" height="62" rx="4" fill="#1B1912" stroke="#3A362B"/>
+          <text x="76" y="58" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8F897A">idle time / shift</text>
+          <text x="76" y="84" font-family="Archivo, sans-serif" font-size="24" font-weight="800" fill="var(--cat)">-31%</text>
+          <rect x="406" y="326" width="176" height="62" rx="4" fill="#1B1912" stroke="#3A362B"/>
+          <text x="422" y="350" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8F897A">fuel per tonne moved</text>
+          <text x="422" y="376" font-family="Archivo, sans-serif" font-size="24" font-weight="800" fill="var(--cat)">-14%</text>
+        </svg>
+      </div>
+      <details class="viz__alt" data-agent-id="alt-autonomy">
+        <summary>Read this diagram as text</summary>
+        <div class="viz__text">
+          <p><b>What the diagram shows.</b> A closed oval haul route with a rotating radar sweep at its centre. Three trucks sit on the loop at the three points of the cycle: <b>load</b> at the top, <b>haul</b> on the right, <b>dump</b> at the lower left. Two readouts sit in the corners: idle time per shift down 31 percent, fuel per tonne moved down 14 percent.</p>
+          <p><b>What it means.</b> An autonomous truck repeats the same line every pass. It does not overshoot the loading point, coast to a stop, or wait with the engine running through a shift change. Removing that variance is what produces both figures, and the fuel figure is an emissions figure.</p>
+          <dl>
+            <dt>Cycle stages</dt><dd>Load, haul, dump, return</dd>
+            <dt>Idle time per shift</dt><dd>31% lower (concept data)</dd>
+            <dt>Fuel per tonne moved</dt><dd>14% lower (concept data)</dd>
+            <dt>Motion</dt><dd>Route dashes travel clockwise; radar wedge sweeps</dd>
+          </dl>
+        </div>
+      </details>
+    </figure>
+
+    <div>
+      <div class="grid grid--3" style="grid-template-columns:1fr">
+        <div class="tile">
+          <h3>Autonomous hauling</h3>
+          <p>Driverless haul fleets running production sites around the clock, with the same fleet software supervising mixed autonomous and crewed machines.</p>
+        </div>
+        <div class="tile">
+          <h3>Digital twins</h3>
+          <p>A live model of each machine, fed by onboard telemetry, that predicts the component failure before the component fails and books the rebuild in advance.</p>
+        </div>
+        <div class="tile">
+          <h3>Electrified powertrains</h3>
+          <p>Battery-electric machines, charging infrastructure and the energy-management layer that decides when a site draws from the grid and when it draws from storage.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     COMPANY & INVESTORS & NEWS (merged)
+     ========================================================= -->
+<section class="section" id="company" aria-labelledby="co-h">
+  <div class="section__head">
+    <span class="section__num">04 / Company and investors</span>
+    <h2 id="co-h">A hundred years of moving material</h2>
+    <p class="lead">Caterpillar Inc. has built construction and mining equipment, engines, turbines and locomotives since 1925. Company information, governance, investor disclosure and press releases used to be four separate menus. They are one section here.</p>
+  </div>
+
+  <div class="grid grid--4">
+    <div class="tile"><h3>Founded</h3><p class="num" style="font-size:1.6rem;color:var(--cat);font-weight:800">1925</p><p>Formed by the merger of Holt and Best.</p></div>
+    <div class="tile"><h3>Dealers</h3><p class="num" style="font-size:1.6rem;color:var(--cat);font-weight:800">150+</p><p>Independent dealers serving customers worldwide.</p></div>
+    <div class="tile"><h3>Brands</h3><p class="num" style="font-size:1.6rem;color:var(--cat);font-weight:800">18</p><p>Listed in full in the section above.</p></div>
+    <div class="tile"><h3>Listed as</h3><p class="num" style="font-size:1.6rem;color:var(--cat);font-weight:800">NYSE: CAT</p><p>Quarterly results and SEC filings in the directory.</p></div>
+  </div>
+</section>
+
+<div class="news" aria-label="Latest news" role="region">
+  <article>
+    <time datetime="2026-09-15">15 Sep 2026</time>
+    <div>
+      <h3>Luck Stone extends autonomous hauling to two more quarries</h3>
+      <p>After more than eighteen months of autonomous hauling at Bull Run Quarry, Luck Stone and Caterpillar are taking the technology to two further Virginia operations.</p>
+    </div>
+  </article>
+  <article>
+    <time datetime="2026-09-02">02 Sep 2026</time>
+    <div>
+      <h3>Caterpillar and FieldAI work together on industrial autonomy</h3>
+      <p>A collaboration on AI-powered autonomy, robotics and digital twins aimed at safer and more productive sites.</p>
+    </div>
+  </article>
+  <article>
+    <time datetime="2026-08-17">17 Aug 2026</time>
+    <div>
+      <h3>Workforce commitment expands to Arkansas</h3>
+      <p>Caterpillar announced the launch of its workforce development commitment in Arkansas.</p>
+    </div>
+  </article>
+  <article>
+    <time datetime="2026-07-09">09 Jul 2026</time>
+    <div>
+      <h3>Skycatch acquisition broadens mining technology</h3>
+      <p>Caterpillar acquired Skycatch, a provider of spatial data capture, processing and analysis for mining.</p>
+    </div>
+  </article>
+</div>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     CAREERS
+     ========================================================= -->
+<section class="section" id="careers" aria-labelledby="car-h">
+  <div class="section__head">
+    <span class="section__num">05 / Careers</span>
+    <h2 id="car-h">The next decade needs people who like hard problems</h2>
+    <p class="lead">Electrification, autonomy and circular manufacturing are engineering problems before they are marketing ones. Roles sit across design, manufacturing, software, supply chain, dealer support and field service.</p>
+  </div>
+  <div class="grid grid--3">
+    <div class="tile"><h3>Engineering and technology</h3><p>Powertrain, controls, autonomy, embedded software, data and machine learning.</p></div>
+    <div class="tile"><h3>Manufacturing and supply chain</h3><p>Plant operations, quality, logistics and the rebuild network.</p></div>
+    <div class="tile"><h3>Commercial and support</h3><p>Dealer development, finance, marketing, legal and customer service.</p></div>
+  </div>
+  <p style="margin-top:1.5rem"><a class="btn" href="#directory" data-agent-id="cta-jobs" data-agent-action="jump to the directory where job search links live">Find the job search links</a></p>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     AGENT INTERFACE — accessibility tree API
+     ========================================================= -->
+<section class="agent" id="agents" aria-labelledby="ag-h">
+  <div class="section section--tight" style="padding-top:clamp(2.5rem,5vw,4rem)">
+    <div class="section__head">
+      <span class="section__num">06 / Agent interface</span>
+      <h2 id="ag-h">The accessibility tree, published on purpose</h2>
+      <div class="agent__lead">
+        <p><b>For people:</b> every browser already builds a second, simplified copy of this page for screen readers. It is called the accessibility tree. It throws away the layout and the styling and keeps only what matters for using the page: the <b>role</b> of each thing (is it a link, a button, a heading, a checkbox), its <b>name</b> (the words a screen reader would announce), and its <b>state</b> (is it checked, expanded, disabled, current). Normally that tree is invisible. On this page it is published, and you can read it in the console below.</p>
+        <p><b>For agents:</b> the same tree is available programmatically. Call <code class="mono">window.CAT.help()</code> for the full surface. Nothing on this page is behind a hover menu, a carousel or a second page load, so the tree below is the whole site.</p>
+      </div>
+    </div>
+
+    <div class="grid grid--3">
+      <div class="tile">
+        <h3>Role</h3>
+        <p>What kind of control it is. <code class="mono">link</code>, <code class="mono">button</code>, <code class="mono">checkbox</code>, <code class="mono">radio</code>, <code class="mono">heading</code>, <code class="mono">navigation</code>. Taken from the element itself or its explicit ARIA role.</p>
+      </div>
+      <div class="tile">
+        <h3>Name</h3>
+        <p>The words that identify it, worked out the way a screen reader works it out: <code class="mono">aria-labelledby</code>, then <code class="mono">aria-label</code>, then the native label, alt text or caption, then its own text.</p>
+      </div>
+      <div class="tile">
+        <h3>State</h3>
+        <p>What it is doing right now. <code class="mono">expanded</code>, <code class="mono">checked</code>, <code class="mono">disabled</code>, <code class="mono">current</code>, heading <code class="mono">level</code>, the <code class="mono">href</code> a link points at.</p>
+      </div>
+    </div>
+
+    <div class="console" id="console">
+      <div class="console__bar">
+        <span class="console__title" id="console-title">window.CAT.a11y.interactive()</span>
+        <button class="btn btn--ghost btn--sm" type="button" data-view="interactive" data-agent-id="view-interactive" aria-pressed="true">Interactive elements</button>
+        <button class="btn btn--ghost btn--sm" type="button" data-view="structure" data-agent-id="view-structure" aria-pressed="false">Landmarks &amp; headings</button>
+        <button class="btn btn--ghost btn--sm" type="button" data-view="tree" data-agent-id="view-tree" aria-pressed="false">Full tree</button>
+        <button class="btn btn--ghost btn--sm" type="button" data-view="content" data-agent-id="view-content" aria-pressed="false">Page content</button>
+        <button class="btn btn--sm" type="button" id="copy-json" data-agent-id="copy-json" data-agent-action="copy the displayed JSON to the clipboard">Copy JSON</button>
+      </div>
+      <pre class="console__out" id="console-out" tabindex="0" role="region" aria-label="Accessibility tree output" aria-live="polite">Loading the accessibility tree…</pre>
+    </div>
+    <p><small id="console-note" class="mono">Live output. Toggle a control in the header, open an image description, then press a view button again to watch the states change.</small></p>
+
+    <h3 style="margin-top:2.5rem">API surface</h3>
+    <table class="api-table">
+      <caption class="sr-only">Methods available on window.CAT</caption>
+      <thead><tr><th scope="col">Call</th><th scope="col">Returns</th></tr></thead>
+      <tbody>
+        <tr><td><code>CAT.help()</code></td><td>This table, as an object.</td></tr>
+        <tr><td><code>CAT.a11y.tree()</code></td><td>The full accessibility tree, nested, with role, name, states and children.</td></tr>
+        <tr><td><code>CAT.a11y.flat()</code></td><td>The same tree flattened to an array, each node carrying its depth and path.</td></tr>
+        <tr><td><code>CAT.a11y.interactive()</code></td><td>Only the operable nodes: links, buttons, checkboxes, radios, disclosures.</td></tr>
+        <tr><td><code>CAT.a11y.landmarks()</code></td><td>Landmark regions and the heading outline, for orientation in one call.</td></tr>
+        <tr><td><code>CAT.a11y.find("text")</code></td><td>Every node whose name or role matches the string, case-insensitive.</td></tr>
+        <tr><td><code>CAT.a11y.get("nav-careers")</code></td><td>One node by its <code>data-agent-id</code>.</td></tr>
+        <tr><td><code>CAT.a11y.act("toggle-textview")</code></td><td>Operates a control by id and returns its node with the new state.</td></tr>
+        <tr><td><code>CAT.content()</code></td><td>Every section as text, including the written description of every illustration.</td></tr>
+        <tr><td><code>CAT.manifest()</code></td><td>The static site manifest, also readable without scripting at <code>#cat-page-manifest</code>.</td></tr>
+        <tr><td><code>CAT.json(x)</code></td><td>Any of the above, pretty-printed as a string.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="grid grid--3" style="margin-top:2rem">
+      <div class="tile">
+        <h3>No scripting? Still readable.</h3>
+        <p>A static manifest sits in the markup as <code class="mono">&lt;script type="application/json" id="cat-page-manifest"&gt;</code>. A fetch-and-parse agent gets the site index, the goals, the news and every image description without executing anything.</p>
+      </div>
+      <div class="tile">
+        <h3>Stable handles</h3>
+        <p>Every operable element carries <code class="mono">data-agent-id</code> and, where the effect is not obvious from the name, <code class="mono">data-agent-action</code> in plain language. Ids do not change between renders.</p>
+      </div>
+      <div class="tile">
+        <h3>One page, six destinations</h3>
+        <p>The 2026 site put roughly ninety links behind five hover menus. Everything here is one document and six in-page anchors, so an agent reaches any fact in a single load.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="seam" aria-hidden="true">
+
+<!-- =========================================================
+     DIRECTORY — replaces every dropdown menu
+     ========================================================= -->
+<section class="section" id="directory" aria-labelledby="dir-h">
+  <div class="section__head">
+    <span class="section__num">07 / Directory</span>
+    <h2 id="dir-h">Everything that used to be a menu</h2>
+    <p class="lead">Links open caterpillar.com. Listed flat and in full so that neither a person nor an agent has to hover, guess or open a submenu to find out what exists.</p>
+  </div>
+  <div class="directory">
+    <section aria-labelledby="dir-company"><h3 id="dir-company">Company</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar.html">About Caterpillar</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/purpose.html">Mission and purpose</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/strategy.html">Strategy</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/history.html">History</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/industries.html">Industries we serve</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/innovation.html">Innovation</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/global-footprint.html">Global locations</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/about-caterpillar/code-of-conduct.html">Code of conduct</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-sus"><h3 id="dir-sus">Sustainability</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability.html">All sustainability</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/2030-sustainability-goals.html" data-agent-id="dir-2030-goals">2030 sustainability goals</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/remanufacturing.html">Circular economy</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/energy-climate.html">Climate and energy</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/operations.html">Operations</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/sustainability-report.html" data-agent-id="dir-sustainability-report">Sustainability report</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/sustainability/conflict-minerals.html">Conflict minerals</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-gov"><h3 id="dir-gov">Governance</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/company/governance.html">All governance</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/governance/board-of-directors.html">Board of directors</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/governance/officers.html">Officers</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/governance/committees-and-charters.html">Committees and charters</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/governance/governance-documents.html">Governance documents</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/governance/political-engagement.html">Political engagement</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-inv"><h3 id="dir-inv">Investors</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/investors.html">All investors</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/stock-information.html">Stock information</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/financial-information.html">Financial information</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/quarterly-results.html" data-agent-id="dir-quarterly-results">Quarterly results</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/sec-filings.html">SEC filings</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/reports.html">Annual and sustainability reports</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/events-presentations.html">Events and presentations</a></li>
+        <li><a href="https://www.caterpillar.com/en/investors/shareholder-services.html">Shareholder services</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-news"><h3 id="dir-news">News</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/news.html">All news</a></li>
+        <li><a href="https://www.caterpillar.com/en/news/caterpillarNews.html">Feature stories</a></li>
+        <li><a href="https://www.caterpillar.com/en/news/corporate-press-releases.html" data-agent-id="dir-press-releases">Corporate press releases</a></li>
+        <li><a href="https://www.caterpillar.com/en/news/media-contacts.html">Media contacts</a></li>
+        <li><a href="https://www.caterpillar.com/en/news/media-library.html">Media library</a></li>
+        <li><a href="https://www.caterpillar.com/en/news/caterpillar-faq.html">Frequently asked questions</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-car"><h3 id="dir-car">Careers</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/careers.html">All careers</a></li>
+        <li><a href="https://careers.caterpillar.com/en/jobs/" data-agent-id="dir-job-search">Search and apply</a></li>
+        <li><a href="https://www.caterpillar.com/en/careers/career-areas.html">Career areas</a></li>
+        <li><a href="https://www.caterpillar.com/en/careers/talent-community.html">Talent community</a></li>
+        <li><a href="https://www.caterpillar.com/en/careers/meet-team-caterpillar.html">Life at Caterpillar</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-work"><h3 id="dir-work">Working together</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/company/working-together/employees.html">Employee resources</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/working-together/retirees-alumni.html">Retiree and alumni resources</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/working-together/suppliers.html">Supplier resources</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/working-together/sponsorships.html">Sponsorships</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/working-together/stem.html">STEM at Caterpillar</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-prod"><h3 id="dir-prod">Products and dealers</h3>
+      <ul>
+        <li><a href="https://www.cat.com/en_US/products.html">Cat products</a></li>
+        <li><a href="https://parts.cat.com/">Cat parts</a></li>
+        <li><a href="https://www.cat.com/en_US/support.html">Support</a></li>
+        <li><a href="https://www.cat.com/en_US/support/dealer-locator.html" data-agent-id="dir-dealer-locator">Locate a dealer</a></li>
+        <li><a href="https://www.caterpillar.com/en/brands/cat/merchandise.html">Merchandise</a></li>
+        <li><a href="https://www.caterpillar.com/en/brands.html">All brands</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-visit"><h3 id="dir-visit">Visitors centre and museum</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/company/visitors-center.html">Visitors centre</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/visitors-center/exhibits.html">Exhibits</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/visitors-center/meetings-events.html">Meeting rooms</a></li>
+        <li><a href="https://www.caterpillar.com/en/company/visitors-center/resources.html">Education</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="dir-legal"><h3 id="dir-legal">Contact and legal</h3>
+      <ul>
+        <li><a href="https://www.caterpillar.com/en/contact.html" data-agent-id="dir-contact">Contact us</a></li>
+        <li><a href="https://www.caterpillar.com/en/sitemap.html">Site map</a></li>
+        <li><a href="https://www.caterpillar.com/en/legal-notices/accessibility-statement.html" data-agent-id="dir-accessibility-statement">Accessibility statement</a></li>
+        <li><a href="https://www.caterpillar.com/en/legal-notices/privacy-notice.html">Privacy notice</a></li>
+        <li><a href="https://www.caterpillar.com/en/legal-notices.html">Legal notices</a></li>
+      </ul>
+    </section>
+  </div>
+</section>
+
+</main>
+
+<hr class="seam" aria-hidden="true">
+
+<footer class="foot">
+  <div class="foot__grid">
+    <div>
+      <h3>On this page</h3>
+      <ul>
+        <li><a href="#sustainability">Sustainability</a></li>
+        <li><a href="#build">What we build</a></li>
+        <li><a href="#technology">Technology</a></li>
+        <li><a href="#company">Company and investors</a></li>
+        <li><a href="#careers">Careers</a></li>
+        <li><a href="#agents">Agent interface</a></li>
+        <li><a href="#directory">Full directory</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Accessibility</h3>
+      <ul>
+        <li><a href="#textview">Text view for every illustration</a></li>
+        <li><a href="#stillness">Stop all motion</a></li>
+        <li><a href="#mode-contrast">High contrast mode</a></li>
+        <li><a href="#agents">Published accessibility tree</a></li>
+      </ul>
+      <p><small>Motion also stops automatically when your system asks for reduced motion.</small></p>
+    </div>
+    <div>
+      <h3>Machine readable</h3>
+      <ul>
+        <li><a href="#cat-page-manifest">Page manifest (JSON)</a></li>
+        <li><a href="#agents">Accessibility tree API</a></li>
+      </ul>
+      <p><small class="mono">window.CAT.help()</small></p>
+    </div>
+    <div>
+      <h3>About this build</h3>
+      <p><small>An independent concept redesign of caterpillar.com set in 2028. Not affiliated with, endorsed by or published by Caterpillar Inc. Cat, Caterpillar and the brand names listed are trademarks of their owner.</small></p>
+    </div>
+  </div>
+  <div class="foot__legal">
+    <p>Concept build 2028.1. Structural facts drawn from caterpillar.com as published in 2026; all 2028 figures are illustrative scenario values, flagged as <span class="mono">concept</span> in the page manifest.</p>
+  </div>
+</footer>
+
+<script type="application/json" id="cat-page-manifest">
+{
+  "schema": "cat.page.manifest/1",
+  "generated_for": "AI agents and non-scripting clients",
+  "data_status": "MIXED — structural facts sourced from caterpillar.com (2026); all 2028 metrics are illustrative concept values and are NOT real Caterpillar disclosures",
+  "affiliation": "Independent concept redesign. Not affiliated with or endorsed by Caterpillar Inc.",
+  "page": {
+    "title": "Caterpillar 2028 — Building a world that runs cleaner",
+    "single_page": true,
+    "destinations": 6,
+    "dropdown_menus": 0,
+    "note": "Every destination is an in-page anchor. No navigation is required to read the whole site."
+  },
+  "api": {
+    "entry": "window.CAT",
+    "help": "window.CAT.help()",
+    "accessibility_tree": ["CAT.a11y.tree()", "CAT.a11y.flat()", "CAT.a11y.interactive()", "CAT.a11y.landmarks()", "CAT.a11y.find(query)", "CAT.a11y.get(agentId)", "CAT.a11y.act(agentId)"],
+    "content": "CAT.content()",
+    "node_shape": { "role": "string", "name": "string", "states": "object", "agentId": "string|null", "path": "string" }
+  },
+  "sections": [
+    { "id": "banner-sustainability", "order": 1, "title": "We move the world. Now we move it cleaner.", "kind": "banner", "topic": "sustainability" },
+    { "id": "sustainability", "order": 2, "title": "Progress against the 2030 goals" },
+    { "id": "build", "order": 3, "title": "Machines, engines, power and the people who keep them running" },
+    { "id": "technology", "order": 4, "title": "Autonomy is the emissions strategy nobody expected" },
+    { "id": "company", "order": 5, "title": "A hundred years of moving material" },
+    { "id": "careers", "order": 6, "title": "The next decade needs people who like hard problems" },
+    { "id": "agents", "order": 7, "title": "The accessibility tree, published on purpose" },
+    { "id": "directory", "order": 8, "title": "Everything that used to be a menu" }
+  ],
+  "goals_2030": [
+    { "goal": "Operating greenhouse gas intensity", "target": "30% reduction vs 2018 baseline", "scenario_2028": "27%", "status": "concept" },
+    { "goal": "Renewable electricity in manufacturing", "target": "100% by 2030", "scenario_2028": "62%", "status": "concept" },
+    { "goal": "Waste diverted from landfill", "target": "100% of operating facilities", "scenario_2028": "94%", "status": "concept" },
+    { "goal": "New products with a lower-carbon option", "target": "every new product more sustainable than the one it replaces", "scenario_2028": "83%", "status": "concept" },
+    { "goal": "Material returned through rebuild", "target": "hold or grow annual take-back weight", "scenario_2028": "148 million pounds", "status": "concept" }
+  ],
+  "figures": [
+    { "id": "fig-hero", "title": "An electric quarry at first light", "text_available": true, "summary": "Wind turbines, a battery-electric excavator, an autonomous haul truck, a survey drone and a DC fast-charging tower on a working quarry at dawn." },
+    { "id": "fig-circular", "title": "The rebuild loop", "text_available": true, "summary": "Five-stage circular loop — build, use, take back, rebuild, resell — with 148 million pounds returned in the 2028 scenario." },
+    { "id": "fig-autonomy", "title": "Autonomous haul cycle", "text_available": true, "summary": "Closed load-haul-dump route with three autonomous trucks; idle time down 31 percent and fuel per tonne down 14 percent in the 2028 scenario." }
+  ],
+  "brands": ["Cat","Cat Financial","Cat Reman","Cat Rentals","Cat Lift Trucks","Anchor","AsiaTrak","FG Wilson","Hindustan","MaK","MWM","Olympian","Perkins","Progress Rail","SEM","SPM Oil & Gas","Solar Turbines","Turner Powertrain Systems"],
+  "news": [
+    { "date": "2026-09-15", "title": "Luck Stone extends autonomous hauling to two more quarries" },
+    { "date": "2026-09-02", "title": "Caterpillar and FieldAI work together on industrial autonomy" },
+    { "date": "2026-08-17", "title": "Workforce commitment expands to Arkansas" },
+    { "date": "2026-07-09", "title": "Skycatch acquisition broadens mining technology" }
+  ],
+  "accessibility": {
+    "default_theme": "dark",
+    "themes": ["dark", "light", "high-contrast"],
+    "text_alternative_for_every_image": true,
+    "global_text_view_control": "#textview",
+    "motion_control": "#stillness",
+    "respects_prefers_reduced_motion": true,
+    "animation_technique": "HTML and CSS only — no scripted animation"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Caterpillar 2028 — Building a world that runs cleaner",
+  "description": "Concept redesign of the Caterpillar homepage for 2028: dark by default, sustainability-led, every illustration readable as text, and a published accessibility tree API for AI agents.",
+  "inLanguage": "en",
+  "accessibilityFeature": ["alternativeText","structuralNavigation","highContrastDisplay","readingOrder","displayTransformability","tableOfContents"],
+  "accessibilityHazard": ["noFlashingHazard","noSoundHazard"],
+  "accessibilityControl": ["fullKeyboardControl","fullMouseControl","fullTouchControl"],
+  "accessibilitySummary": "Single page, no dropdown menus. Every illustration has an equivalent written description reachable with one control. All motion is CSS-based and can be stopped. The accessibility tree is exposed programmatically at window.CAT.a11y.",
+  "about": { "@type": "Organization", "name": "Caterpillar Inc.", "foundingDate": "1925", "tickerSymbol": "NYSE:CAT" },
+  "isBasedOn": "https://www.caterpillar.com/",
+  "disambiguatingDescription": "Independent concept redesign. Not affiliated with or endorsed by Caterpillar Inc. All 2028 figures are illustrative."
+}
+</script>
+
+<script>
+/* ============================================================================
+   CAT accessibility tree API
+   Computes roles, names and states the way the platform accessibility tree
+   does, and publishes them. Uses the browser's own computedRole / computedName
+   when the engine exposes them, and falls back to a spec-informed computation.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var NAME_FROM_CONTENT = ["button","link","heading","listitem","cell","columnheader",
+    "rowheader","gridcell","option","tab","menuitem","switch","checkbox","radio",
+    "tooltip","status","caption","term","definition"];
+  var INTERACTIVE = ["link","button","checkbox","radio","switch","textbox","searchbox",
+    "combobox","listbox","slider","spinbutton","menuitem","tab","option"];
+  var LANDMARKS = ["banner","navigation","main","complementary","contentinfo","region","search","form"];
+  var SKIP_ROLES = ["generic","presentation","none",""];
+
+  function has(list, v) { return list.indexOf(v) !== -1; }
+  function tag(el) { return el.tagName ? el.tagName.toLowerCase() : ""; }
+  // Text as the accessibility tree sees it: aria-hidden and display:none subtrees
+  // contribute nothing, but visually-hidden (sr-only) text still counts.
+  function txt(el) {
+    if (!el) return "";
+    var buf = "";
+    (function walk(n) {
+      for (var i = 0; i < n.childNodes.length; i++) {
+        var c = n.childNodes[i];
+        if (c.nodeType === 3) { buf += c.nodeValue; continue; }
+        if (c.nodeType !== 1) continue;
+        if (c.getAttribute("aria-hidden") === "true" || c.hasAttribute("hidden")) continue;
+        var cs; try { cs = getComputedStyle(c); } catch (e) { cs = null; }
+        if (cs && (cs.display === "none" || cs.visibility === "hidden")) continue;
+        walk(c);
+      }
+    })(el);
+    return buf.replace(/\s+/g, " ").trim();
+  }
+  function clip(s, n) { n = n || 160; return s.length > n ? s.slice(0, n - 1) + "\u2026" : s; }
+
+  /* ---------- visibility ---------- */
+  function hidden(el) {
+    if (!el || el.nodeType !== 1) return true;
+    if (el.hasAttribute("hidden")) return true;
+    if (el.getAttribute("aria-hidden") === "true") return true;
+    if (el.inert === true) return true;
+    var cs;
+    try { cs = getComputedStyle(el); } catch (e) { return false; }
+    if (cs.display === "none" || cs.visibility === "hidden") return true;
+    // content of a closed <details> is not exposed, except the summary itself
+    var d = el.parentElement ? el.parentElement.closest("details:not([open])") : null;
+    if (d && !(tag(el) === "summary" && el.parentElement === d)) return true;
+    return false;
+  }
+
+  /* ---------- role ---------- */
+  function inputRole(el) {
+    var t = (el.getAttribute("type") || "text").toLowerCase();
+    if (t === "button" || t === "submit" || t === "reset" || t === "image") return "button";
+    if (t === "checkbox") return "checkbox";
+    if (t === "radio") return "radio";
+    if (t === "range") return "slider";
+    if (t === "number") return "spinbutton";
+    if (t === "search") return "searchbox";
+    if (t === "email" || t === "tel" || t === "url" || t === "text") return "textbox";
+    return "generic";
+  }
+  function namedRegion(el) {
+    return el.hasAttribute("aria-label") || el.hasAttribute("aria-labelledby") ? "region" : "generic";
+  }
+  function topLevelLandmark(el) {
+    return !el.closest("article, aside, main, nav, section");
+  }
+  function implicitRole(el) {
+    var t = tag(el);
+    if (/^h[1-6]$/.test(t)) return "heading";
+    switch (t) {
+      case "a": case "area": return el.hasAttribute("href") ? "link" : "generic";
+      case "button": return "button";
+      case "summary": return el.parentElement && tag(el.parentElement) === "details" ? "button" : "generic";
+      case "details": return "group";
+      case "dialog": return "dialog";
+      case "input": return inputRole(el);
+      case "select": return el.multiple || el.size > 1 ? "listbox" : "combobox";
+      case "option": return "option";
+      case "textarea": return "textbox";
+      case "nav": return "navigation";
+      case "main": return "main";
+      case "aside": return "complementary";
+      case "header": return topLevelLandmark(el) ? "banner" : "generic";
+      case "footer": return topLevelLandmark(el) ? "contentinfo" : "generic";
+      case "form": return "form";
+      case "search": return "search";
+      case "section": return namedRegion(el);
+      case "article": return "article";
+      case "ul": case "ol": return "list";
+      case "li": return "listitem";
+      case "table": return "table";
+      case "caption": return "caption";
+      case "tr": return "row";
+      case "td": return "cell";
+      case "th": return el.scope === "row" ? "rowheader" : "columnheader";
+      case "thead": case "tbody": case "tfoot": return "rowgroup";
+      case "img": return el.getAttribute("alt") === "" ? "presentation" : "img";
+      case "svg": return "img";
+      case "figure": return "figure";
+      case "figcaption": return "caption";
+      case "fieldset": return "group";
+      case "legend": return "caption";
+      case "progress": return "progressbar";
+      case "meter": return "meter";
+      case "hr": return "separator";
+      case "output": return "status";
+      case "time": return "time";
+      case "p": return "paragraph";
+      case "blockquote": return "blockquote";
+      case "dl": return "list";
+      case "dt": return "term";
+      case "dd": return "definition";
+      default: return "generic";
+    }
+  }
+  function role(el) {
+    var explicit = (el.getAttribute("role") || "").trim().split(/\s+/)[0];
+    if (explicit) return explicit;
+    if (typeof el.computedRole === "string" && el.computedRole && el.computedRole !== "generic") {
+      return el.computedRole;
+    }
+    return implicitRole(el);
+  }
+
+  /* ---------- accessible name ---------- */
+  function labelFor(el) {
+    if (el.id) {
+      var l = document.querySelector('label[for="' + (window.CSS && CSS.escape ? CSS.escape(el.id) : el.id) + '"]');
+      if (l) return txt(l);
+    }
+    var wrap = el.closest ? el.closest("label") : null;
+    return wrap ? txt(wrap) : "";
+  }
+  function child(el, sel) { return el.querySelector(":scope > " + sel); }
+
+  function accName(el, r) {
+    var lb = el.getAttribute("aria-labelledby");
+    if (lb) {
+      var s = lb.split(/\s+/).map(function (id) {
+        var n = document.getElementById(id); return n ? txt(n) : "";
+      }).filter(Boolean).join(" ");
+      if (s) return clip(s);
+    }
+    var al = el.getAttribute("aria-label");
+    if (al && al.trim()) return clip(al.trim());
+
+    var t = tag(el);
+    if (t === "input") {
+      var ty = (el.getAttribute("type") || "text").toLowerCase();
+      if (ty === "button" || ty === "submit" || ty === "reset") {
+        return el.value || (ty === "submit" ? "Submit" : ty === "reset" ? "Reset" : "");
+      }
+      if (ty === "image") return el.getAttribute("alt") || "Submit";
+      return clip(labelFor(el) || el.title || el.placeholder || "");
+    }
+    if (t === "img" || t === "area") return clip(el.getAttribute("alt") || el.title || "");
+    if (t === "svg") { var ti = child(el, "title"); if (ti) return clip(txt(ti)); }
+    if (t === "fieldset") { var lg = child(el, "legend"); if (lg) return clip(txt(lg)); }
+    if (t === "figure") { var fc = child(el, "figcaption"); if (fc) return clip(txt(fc)); }
+    if (t === "table") { var cp = child(el, "caption"); if (cp) return clip(txt(cp)); }
+    if (t === "details") { var sm = child(el, "summary"); if (sm) return clip(txt(sm)); }
+    if (t === "select" || t === "textarea") return clip(labelFor(el) || el.title || "");
+
+    if (has(NAME_FROM_CONTENT, r)) {
+      var own = txt(el);
+      if (own) return clip(own);
+    }
+    if (el.title) return clip(el.title);
+    if (typeof el.computedName === "string" && el.computedName) return clip(el.computedName);
+    return "";
+  }
+
+  /* ---------- states ---------- */
+  function states(el, r) {
+    var s = {}, t = tag(el);
+    if (t === "details") s.expanded = !!el.open;
+    if (t === "summary" && el.parentElement && tag(el.parentElement) === "details") s.expanded = !!el.parentElement.open;
+    var ae = el.getAttribute("aria-expanded"); if (ae !== null) s.expanded = ae === "true";
+    if (t === "input" && /^(checkbox|radio)$/i.test(el.type)) s.checked = !!el.checked;
+    var ac = el.getAttribute("aria-checked");
+    if (ac !== null) s.checked = ac === "mixed" ? "mixed" : ac === "true";
+    if (el.disabled === true || el.getAttribute("aria-disabled") === "true") s.disabled = true;
+    var ap = el.getAttribute("aria-pressed"); if (ap !== null) s.pressed = ap === "true";
+    var as = el.getAttribute("aria-selected"); if (as !== null) s.selected = as === "true";
+    var cu = el.getAttribute("aria-current"); if (cu !== null) s.current = cu === "true" ? true : cu;
+    if (el.required === true || el.getAttribute("aria-required") === "true") s.required = true;
+    if (el.getAttribute("aria-invalid") === "true") s.invalid = true;
+    if (el.readOnly === true) s.readonly = true;
+    var hp = el.getAttribute("aria-haspopup"); if (hp) s.haspopup = hp;
+    var lv = el.getAttribute("aria-live"); if (lv) s.live = lv;
+    if (r === "heading") s.level = Number(el.getAttribute("aria-level")) || Number(t.charAt(1)) || 2;
+    if (r === "link") s.href = el.getAttribute("href");
+    if (/textbox|searchbox|combobox|slider|spinbutton/.test(r) && typeof el.value === "string") s.value = el.value;
+    if (r === "progressbar" || r === "meter") { s.value = el.value; s.max = el.max; }
+    if (document.activeElement === el) s.focused = true;
+    return s;
+  }
+
+  /* ---------- identity ---------- */
+  function pathOf(el) {
+    var parts = [], n = el, depth = 0;
+    while (n && n.nodeType === 1 && depth < 5) {
+      if (n.id) { parts.unshift("#" + n.id); break; }
+      var t = tag(n), i = 1, sib = n;
+      while ((sib = sib.previousElementSibling)) if (tag(sib) === t) i++;
+      parts.unshift(i > 1 ? t + ":nth-of-type(" + i + ")" : t);
+      n = n.parentElement; depth++;
+    }
+    return parts.join(" > ");
+  }
+  function focusable(el) {
+    if (el.disabled) return false;
+    if (el.matches("a[href],button,input,select,textarea,summary,[contenteditable='true']")) return true;
+    var ti = el.getAttribute("tabindex");
+    return ti !== null && Number(ti) >= 0;
+  }
+
+  function node(el, depth) {
+    var r = role(el);
+    var n = {
+      role: r,
+      name: accName(el, r),
+      states: states(el, r)
+    };
+    var id = el.getAttribute("data-agent-id");
+    if (id) n.agentId = id;
+    var act = el.getAttribute("data-agent-action");
+    if (act) n.action = act;
+    if (focusable(el)) n.focusable = true;
+    n.path = pathOf(el);
+    if (typeof depth === "number") n.depth = depth;
+    n.roleSource = el.hasAttribute("role") ? "explicit" :
+      (typeof el.computedRole === "string" && el.computedRole ? "platform" : "implicit");
+    return n;
+  }
+
+  /* ---------- traversal ---------- */
+  function build(el, depth) {
+    if (hidden(el)) return null;
+    var r = role(el);
+    var kids = [], i;
+    for (i = 0; i < el.children.length; i++) {
+      var c = build(el.children[i], depth + 1);
+      if (c) kids = kids.concat(c);
+    }
+    if (has(SKIP_ROLES, r)) return kids.length ? kids : null;
+    var n = node(el, depth);
+    if (kids.length) n.children = kids;
+    return [n];
+  }
+
+  function tree(rootSel) {
+    var root = rootSel ? document.querySelector(rootSel) : document.body;
+    if (!root) return [];
+    return build(root, 0) || [];
+  }
+
+  function flat(rootSel) {
+    var out = [];
+    (function walk(list) {
+      for (var i = 0; i < list.length; i++) {
+        var copy = {}, k;
+        for (k in list[i]) if (k !== "children") copy[k] = list[i][k];
+        out.push(copy);
+        if (list[i].children) walk(list[i].children);
+      }
+    })(tree(rootSel));
+    return out;
+  }
+
+  function collect(test) {
+    var els = document.body.querySelectorAll("*"), out = [], i;
+    for (i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (hidden(el)) continue;
+      var r = role(el);
+      if (test(el, r)) out.push(node(el));
+    }
+    return out;
+  }
+
+  var api = {
+    tree: tree,
+    flat: flat,
+    interactive: function () {
+      return collect(function (el, r) { return has(INTERACTIVE, r) || (focusable(el) && r !== "generic"); });
+    },
+    landmarks: function () {
+      return {
+        landmarks: collect(function (el, r) { return has(LANDMARKS, r); }),
+        headings: collect(function (el, r) { return r === "heading"; })
+          .map(function (n) { return { level: n.states.level, name: n.name, path: n.path }; })
+      };
+    },
+    find: function (q) {
+      var s = String(q || "").toLowerCase();
+      return flat().filter(function (n) {
+        return (n.name || "").toLowerCase().indexOf(s) !== -1 || n.role.indexOf(s) !== -1;
+      });
+    },
+    get: function (id) {
+      var el = document.querySelector('[data-agent-id="' + id + '"]');
+      return el ? node(el) : null;
+    },
+    act: function (id, opts) {
+      opts = opts || {};
+      var el = document.querySelector('[data-agent-id="' + id + '"]');
+      if (!el) return { error: "No element with data-agent-id " + JSON.stringify(id) };
+      var t = tag(el);
+      if (t === "a") {
+        var href = el.getAttribute("href") || "";
+        if (href.charAt(0) === "#") { el.click(); }
+        else if (opts.navigate) { el.click(); }
+        else return { role: "link", name: accName(el, "link"), navigated: false, wouldNavigateTo: href,
+                      hint: "Pass { navigate: true } to follow an external link." };
+      } else if (t === "summary") {
+        var d = el.parentElement; d.open = !d.open;
+      } else if (t === "details") {
+        el.open = !el.open;
+      } else {
+        el.click();
+      }
+      var after = node(el);
+      after.acted = true;
+      return after;
+    },
+    node: node,
+    roleOf: role,
+    nameOf: function (el) { return accName(el, role(el)); },
+    statesOf: function (el) { return states(el, role(el)); }
+  };
+
+  /* ---------- page content extraction ---------- */
+  function content() {
+    var out = { title: document.title, sections: [] };
+    var secs = document.querySelectorAll("main > section, main > .news, main > section .section");
+    var seen = [];
+    document.querySelectorAll("main section[id], main .news").forEach(function (sec) {
+      if (seen.indexOf(sec) !== -1) return;
+      seen.push(sec);
+      var h = sec.querySelector("h1, h2, h3");
+      var item = {
+        id: sec.id || null,
+        heading: h ? txt(h) : null,
+        text: [],
+        figures: [],
+        links: []
+      };
+      sec.querySelectorAll("p").forEach(function (p) {
+        if (p.closest(".viz__text")) return;
+        var s = txt(p);
+        if (s && s.length > 2) item.text.push(s);
+      });
+      sec.querySelectorAll("figure.viz").forEach(function (f) {
+        item.figures.push({
+          id: f.id,
+          title: txt(f.querySelector("svg > title")),
+          description: txt(f.querySelector(".viz__text"))
+        });
+      });
+      sec.querySelectorAll("a[href]").forEach(function (a) {
+        item.links.push({ name: txt(a), href: a.getAttribute("href"), agentId: a.getAttribute("data-agent-id") || null });
+      });
+      out.sections.push(item);
+    });
+    return out;
+  }
+
+  function manifest() {
+    var el = document.getElementById("cat-page-manifest");
+    try { return JSON.parse(el.textContent); } catch (e) { return { error: "manifest unreadable" }; }
+  }
+
+  function help() {
+    return {
+      about: "Caterpillar 2028 concept page. One document, no dropdown menus, every illustration has a written twin.",
+      accessibilityTree: {
+        "CAT.a11y.tree()": "Nested accessibility tree: role, name, states, children.",
+        "CAT.a11y.flat()": "The same tree as a flat array with depth and CSS path.",
+        "CAT.a11y.interactive()": "Only the operable nodes.",
+        "CAT.a11y.landmarks()": "Landmark regions plus the heading outline.",
+        "CAT.a11y.find(text)": "Nodes whose name or role matches.",
+        "CAT.a11y.get(agentId)": "One node by data-agent-id.",
+        "CAT.a11y.act(agentId, opts)": "Operate a control. External links need { navigate: true }."
+      },
+      content: { "CAT.content()": "All section text plus every image description.", "CAT.manifest()": "Static JSON manifest, also at #cat-page-manifest." },
+      dataStatus: "Structural facts from caterpillar.com (2026). All 2028 metrics are illustrative concept values."
+    };
+  }
+
+  window.CAT = {
+    version: "2028.1",
+    a11y: api,
+    content: content,
+    manifest: manifest,
+    help: help,
+    json: function (x) { return JSON.stringify(typeof x === "function" ? x() : x, null, 2); }
+  };
+  window.__AX__ = api;
+  document.documentElement.setAttribute("data-cat-api", "ready");
+  document.dispatchEvent(new CustomEvent("cat:ready", { detail: { version: "2028.1" } }));
+
+  /* ---------- visible console for people ---------- */
+  var out = document.getElementById("console-out");
+  var title = document.getElementById("console-title");
+  var view = "interactive";
+
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function highlight(s) {
+    return esc(s)
+      .replace(/"([^"\\]*)"(\s*:)/g, '<span class="k">"$1"</span>$2')
+      .replace(/:\s"([^"\\]*)"/g, ': <span class="s">"$1"</span>')
+      .replace(/\b(true|false|null)\b/g, '<span class="n">$1</span>');
+  }
+  var VIEWS = {
+    interactive: { label: "window.CAT.a11y.interactive()", run: function () { return api.interactive(); } },
+    structure:   { label: "window.CAT.a11y.landmarks()",   run: function () { return api.landmarks(); } },
+    tree:        { label: "window.CAT.a11y.tree()",        run: function () { return api.tree(); } },
+    content:     { label: "window.CAT.content()",          run: function () { return content(); } }
+  };
+  var current = "";
+
+  function render() {
+    if (!out) return;
+    var v = VIEWS[view];
+    var data;
+    try { data = v.run(); } catch (e) { out.textContent = "Error: " + e.message; return; }
+    current = JSON.stringify(data, null, 2);
+    var shown = current.length > 140000 ? current.slice(0, 140000) + "\n\u2026 truncated for display. The full object is returned by " + v.label : current;
+    title.textContent = v.label;
+    out.innerHTML = highlight(shown);
+  }
+
+  document.querySelectorAll("[data-view]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      view = b.getAttribute("data-view");
+      document.querySelectorAll("[data-view]").forEach(function (o) {
+        o.setAttribute("aria-pressed", String(o === b));
+      });
+      render();
+    });
+  });
+
+  var copy = document.getElementById("copy-json");
+  if (copy) {
+    copy.addEventListener("click", function () {
+      var done = function (ok) {
+        copy.textContent = ok ? "Copied" : "Press Ctrl+C";
+        setTimeout(function () { copy.textContent = "Copy JSON"; }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(current).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var r = document.createRange(); r.selectNodeContents(out);
+        var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); done(false);
+      }
+    });
+  }
+
+  // states in the console stay honest as the page is used
+  document.addEventListener("change", render);
+  document.addEventListener("toggle", render, true);
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render);
+  else render();
+})();
+</script>
+
+<noscript>
+  <p style="padding:1rem var(--pad);background:#12110C;border-top:1px solid #2B2720">
+    Scripting is off, so the live accessibility-tree console is not running. Everything else works:
+    the page is one document, every illustration carries a written description in the markup, and the
+    machine-readable manifest is in the page source as <code>&lt;script type="application/json" id="cat-page-manifest"&gt;</code>.
+  </p>
+</noscript>
+
+</body>
+</html>
