@@ -454,6 +454,102 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
 :root:has(#stillness:checked) .cycler>span:nth-child(1){opacity:1!important}
 :root:has(#stillness:checked) .bar>i{transform:scaleX(1)!important;animation:none!important}
 :root:has(#stillness:checked) .ticker__track{animation:none!important}
+
+/* ============================================================
+   CAREERS CHATBOT
+   Non-modal dialog. All motion is CSS; only conversation logic
+   is scripted.
+   ============================================================ */
+.chat-launch{
+  position:fixed;right:clamp(.75rem,2vw,1.5rem);bottom:clamp(.75rem,2vw,1.5rem);z-index:90;
+  display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;
+  background:var(--cat);color:#000;border:2px solid var(--cat);border-radius:999px;
+  font-family:inherit;font-weight:700;font-size:.9rem;padding:.75rem 1.1rem;
+  box-shadow:0 0 0 1px #000,0 10px 28px rgba(0,0,0,.55)
+}
+.chat-launch:hover{background:#000;color:var(--cat)}
+.chat-launch__dot{width:.5rem;height:.5rem;border-radius:50%;background:currentColor;animation:beacon 2.4s ease-in-out infinite}
+@keyframes beacon{0%,100%{opacity:.2}50%{opacity:1}}
+:root:has(#mode-light:checked) .chat-launch{background:#14130E;color:#FFCD11;border-color:#14130E}
+:root:has(#mode-light:checked) .chat-launch:hover{background:#FFCD11;color:#14130E}
+
+.chat{
+  position:fixed;right:clamp(.75rem,2vw,1.5rem);bottom:calc(clamp(.75rem,2vw,1.5rem) + 3.5rem);
+  z-index:95;width:min(24.5rem,calc(100vw - 1.5rem));max-height:min(35rem,74vh);
+  display:flex;flex-direction:column;background:var(--void);
+  border:1px solid var(--seam);border-radius:6px;overflow:hidden;
+  box-shadow:0 18px 48px rgba(0,0,0,.62)
+}
+.chat[hidden]{display:none}
+.chat__seam{flex:none;height:6px;background:repeating-linear-gradient(115deg,var(--stripe-a) 0 12px,var(--stripe-b) 12px 24px)}
+.chat__head{display:flex;align-items:center;gap:.7rem;padding:.7rem .9rem;border-bottom:1px solid var(--seam);background:var(--iron)}
+.chat__title{margin:0;font-variation-settings:"wdth" 108,"wght" 700;font-size:.97rem;letter-spacing:-.01em}
+.chat__sub{margin:0;font-size:.71rem;color:var(--dust)}
+.chat__close{
+  margin-left:auto;flex:none;width:2rem;height:2rem;cursor:pointer;
+  background:transparent;border:1px solid var(--seam);border-radius:3px;
+  color:var(--paint);font-family:inherit;font-size:1.05rem;line-height:1
+}
+.chat__close:hover{border-color:var(--cat);color:var(--cat)}
+.chat__log{flex:1 1 auto;overflow-y:auto;padding:.9rem;display:flex;flex-direction:column;gap:.65rem}
+.msg{max-width:90%;padding:.6rem .75rem;border-radius:4px;font-size:.87rem;line-height:1.5}
+.msg--bot{align-self:flex-start;background:var(--iron);border-left:3px solid var(--cat)}
+.msg--you{align-self:flex-end;background:var(--cat);color:#000;font-weight:600}
+.msg p{margin:0 0 .5em;max-width:none}
+.msg p:last-child{margin-bottom:0}
+.msg ul{margin:.4rem 0 0;padding-left:1.05rem;display:grid;gap:.25rem;font-size:.84rem}
+:root:has(#mode-light:checked) .msg--you{background:#14130E;color:#F3EFE3}
+
+.match{margin-top:.55rem;border:1px solid var(--seam);border-radius:4px;background:var(--void)}
+.match__top{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-bottom:1px solid var(--seam)}
+.match__score{font-variation-settings:"wdth" 112,"wght" 850;font-size:1.65rem;line-height:1;color:var(--cat);font-variant-numeric:tabular-nums}
+.match__meta{font-size:.73rem;color:var(--dust)}
+.match__body{padding:.7rem .8rem}
+.match__bar{height:6px;margin-bottom:.6rem;background:var(--iron-2);border:1px solid var(--seam);border-radius:2px;overflow:hidden}
+.match__bar>i{display:block;height:100%;background:var(--cat);transform-origin:left center;animation:fill 1.2s cubic-bezier(.2,.8,.2,1) both}
+.match__demo{margin:0;padding:.55rem .8rem;border-top:1px solid var(--seam);font-family:"IBM Plex Mono",monospace;font-size:.7rem;line-height:1.5;color:var(--dust)}
+:root:has(#stillness:checked) .match__bar>i{transform:scaleX(1)!important;animation:none!important}
+
+.chat__chips{display:flex;flex-wrap:wrap;gap:.35rem;padding:0 .9rem .7rem}
+.chip{
+  cursor:pointer;background:transparent;border:1px solid var(--seam);color:var(--paint);
+  border-radius:999px;padding:.34rem .7rem;font-family:inherit;font-weight:600;font-size:.77rem
+}
+.chip:hover{border-color:var(--cat);color:var(--cat)}
+
+.chat__upload{padding:.7rem .9rem;border-top:1px solid var(--seam);background:var(--iron)}
+.chat__upload>label{display:block;margin-bottom:.4rem;font-size:.76rem;color:var(--dust)}
+.chat__upload input[type=file]{width:100%;font-family:inherit;font-size:.77rem;color:var(--dust)}
+.chat__upload input[type=file]::file-selector-button{
+  margin-right:.6rem;cursor:pointer;border:0;border-radius:3px;padding:.45rem .8rem;
+  background:var(--cat);color:#000;font-family:inherit;font-weight:700;font-size:.77rem
+}
+:root:has(#mode-light:checked) .chat__upload input[type=file]::file-selector-button{background:#14130E;color:#FFCD11}
+
+.chat__form{display:flex;gap:.4rem;padding:.7rem .9rem;border-top:1px solid var(--seam);background:var(--iron)}
+.chat__form input[type=text]{
+  flex:1 1 auto;min-width:0;background:var(--void);border:1px solid var(--seam);border-radius:3px;
+  color:var(--paint);font-family:inherit;font-size:.84rem;padding:.55rem .65rem
+}
+.chat__form input[type=text]::placeholder{color:var(--dust)}
+.chat__send{
+  flex:none;cursor:pointer;border:0;border-radius:3px;padding:.55rem .85rem;
+  background:var(--cat);color:#000;font-family:inherit;font-weight:700;font-size:.81rem
+}
+:root:has(#mode-light:checked) .chat__send{background:#14130E;color:#FFCD11}
+
+.typing{display:inline-flex;gap:.28rem;align-items:center}
+.typing i{display:block;width:.4rem;height:.4rem;border-radius:50%;background:var(--cat);animation:blink 1.1s ease-in-out infinite}
+.typing i:nth-child(2){animation-delay:.18s}
+.typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,80%,100%{opacity:.18}40%{opacity:1}}
+
+details.plain{border:1px solid var(--seam);border-radius:3px;margin-top:1rem}
+details.plain>summary{cursor:pointer;padding:.6rem .8rem;font-weight:600;font-size:.88rem;color:var(--cat)}
+details.plain>summary:hover{background:var(--iron-2)}
+details.plain .plain__body{padding:0 .9rem 1rem}
+details.plain ul{margin:.5rem 0 0;padding-left:1.15rem;display:grid;gap:.35rem;font-size:.9rem}
+@media (max-width:520px){.chat{max-height:78vh}.chat-launch span.chat-launch__label{display:none}}
 @media print{.masthead,.agent,.ticker{display:none}}
 </style>
 </head>
@@ -961,6 +1057,35 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
     <div class="tile"><h3>Manufacturing and supply chain</h3><p>Plant operations, quality, logistics and the rebuild network.</p></div>
     <div class="tile"><h3>Commercial and support</h3><p>Dealer development, finance, marketing, legal and customer service.</p></div>
   </div>
+
+  <article class="panel" id="job-2027-it-intern" aria-labelledby="job-h" style="margin-top:2.25rem">
+    <span class="section__num">Open posting &middot; requisition 2027-IT-INTERN</span>
+    <h3 id="job-h">2027 Summer Intern &mdash; Information Technology</h3>
+    <p class="dim" style="margin-bottom:.9rem">Cat Financial &middot; Nashville, Tennessee &middot; Internship &middot; Summer 2027</p>
+    <p>You are assigned to a specific department and given at least one project to run for the length of the internship. You are expected to use your analytical skills and work independently. At the end of the summer you prepare and deliver a presentation to management on your project, and you meet senior leaders and other interns through group activities and leader presentations.</p>
+    <details class="plain" data-agent-id="job-full">
+      <summary>Read the full posting</summary>
+      <div class="plain__body">
+        <p><b>About Cat Financial.</b> Cat Financial is a subsidiary of Caterpillar Inc. For more than 40 years it has provided financing solutions to customers and Cat dealers for machines, engines, Solar gas turbines, genuine Cat parts and services. It is headquartered in Nashville, Tennessee and serves customers globally through offices and subsidiaries across North and South America, Asia, Australia, Europe and Africa.</p>
+        <p><b>Responsibilities.</b> These vary across IT units and may include one or more of the following:</p>
+        <ul>
+          <li>All programming, development, integration and system administration assignments.</li>
+          <li>Project management, programming, systems and system administration leadership, guidance and assistance to other team members.</li>
+          <li>More complex application and technical problem identification and resolution, including responding to off-shift and weekend support calls.</li>
+          <li>Working independently on complex processes and modules used by one or more programs or systems, or supporting infrastructure component change management.</li>
+          <li>Developing major system modules, programs or infrastructure releases from requirements gathered with system customers.</li>
+          <li>Integrated testing and customer acceptance testing of system components, planned and executed for timely, quality results.</li>
+          <li>Full working knowledge of current programming languages, program design and specification development, programming logic, logic diagrams, system analysis techniques, testing, debugging, documentation standards, file design, storage and internal systems.</li>
+          <li>Integration tasks for in-house developed systems and purchased hardware and software solutions.</li>
+          <li>Assisting customers with documentation, training and usability efforts.</li>
+        </ul>
+      </div>
+    </details>
+    <p style="margin-top:1.1rem">
+      <button class="btn" type="button" data-agent-id="chat-open-from-job"
+              data-agent-action="open the careers assistant with this posting loaded and start a resume match">Match my resume to this role</button>
+    </p>
+  </article>
   <p style="margin-top:1.5rem"><a class="btn" href="#directory" data-agent-id="cta-jobs" data-agent-action="jump to the directory where job search links live">Find the job search links</a></p>
 </section>
 
@@ -1205,6 +1330,48 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
   </div>
 </footer>
 
+<!-- =========================================================
+     CAREERS CHATBOT — non-modal dialog
+     The posting is on the page above and in JSON-LD below, so no
+     agent has to operate this widget to reach the information.
+     ========================================================= -->
+<button class="chat-launch" id="chat-launch" type="button"
+        aria-expanded="false" aria-controls="cat-chat-panel"
+        data-agent-id="chat-open" data-agent-action="open the careers assistant">
+  <span class="chat-launch__dot" aria-hidden="true"></span>
+  <span class="chat-launch__label">Careers assistant</span>
+</button>
+
+<div class="chat" id="cat-chat-panel" role="dialog" aria-modal="false"
+     aria-labelledby="chat-title" aria-describedby="chat-sub" tabindex="-1" hidden>
+  <div class="chat__seam" aria-hidden="true"></div>
+  <div class="chat__head">
+    <div>
+      <h2 class="chat__title" id="chat-title">Careers assistant</h2>
+      <p class="chat__sub" id="chat-sub">Scripted demo. Your file is read in your browser and never uploaded.</p>
+    </div>
+    <button class="chat__close" id="chat-close" type="button" aria-label="Close the careers assistant"
+            data-agent-id="chat-close" data-agent-action="close the careers assistant">&times;</button>
+  </div>
+
+  <div class="chat__log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversation"></div>
+  <div class="chat__chips" id="chat-chips" role="group" aria-label="Suggested questions"></div>
+
+  <div class="chat__upload">
+    <label for="chat-resume">Upload a resume (PDF)</label>
+    <input type="file" id="chat-resume" accept="application/pdf,.pdf"
+           data-agent-id="chat-resume" data-agent-action="select a PDF resume to match against open postings">
+  </div>
+
+  <form class="chat__form" id="chat-form">
+    <label class="sr-only" for="chat-input">Ask the careers assistant a question</label>
+    <input type="text" id="chat-input" autocomplete="off" placeholder="Ask about the internship…"
+           data-agent-id="chat-input" data-agent-action="type a question for the careers assistant">
+    <button class="chat__send" type="submit" data-agent-id="chat-send" data-agent-action="send the typed question">Send</button>
+  </form>
+</div>
+
+
 <script type="application/json" id="cat-page-manifest">
 {
   "schema": "cat.page.manifest/1",
@@ -1254,6 +1421,25 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
     { "date": "2026-08-17", "title": "Workforce commitment expands to Arkansas" },
     { "date": "2026-07-09", "title": "Skycatch acquisition broadens mining technology" }
   ],
+  "jobs": [
+    {
+      "id": "2027-IT-INTERN",
+      "title": "2027 Summer Intern - Information Technology",
+      "employer": "Caterpillar Financial Services Corporation (Cat Financial)",
+      "location": "Nashville, Tennessee, United States",
+      "employmentType": "INTERN",
+      "term": "Summer 2027",
+      "on_page_anchor": "#job-2027-it-intern",
+      "full_text_without_scripting": "#job-2027-it-intern details, plus a schema.org JobPosting block in this document",
+      "note": "Readable without operating the chat widget."
+    }
+  ],
+  "chat": {
+    "entry": "window.CAT.chat",
+    "methods": ["CAT.chat.open()", "CAT.chat.close()", "CAT.chat.isOpen()", "CAT.chat.send(text)", "CAT.chat.transcript()", "CAT.chat.job()", "CAT.chat.simulateMatch()", "CAT.chat.match()", "CAT.chat.uploadResume(File)"],
+    "demo_behaviour": "Any file with a valid %PDF- header returns a 94% match to 2027-IT-INTERN. Resume contents are never parsed and the file never leaves the browser.",
+    "agents": "Use CAT.chat.simulateMatch() to get the match object without a file upload."
+  },
   "accessibility": {
     "default_theme": "dark",
     "themes": ["dark", "light", "high-contrast"],
@@ -1263,6 +1449,29 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
     "respects_prefers_reduced_motion": true,
     "animation_technique": "HTML and CSS only — no scripted animation"
   }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  "identifier": { "@type": "PropertyValue", "name": "requisition", "value": "2027-IT-INTERN" },
+  "title": "2027 Summer Intern - Information Technology",
+  "employmentType": "INTERN",
+  "industry": "Financial Services",
+  "occupationalCategory": "Information Technology",
+  "hiringOrganization": {
+    "@type": "Organization",
+    "name": "Caterpillar Financial Services Corporation (Cat Financial)",
+    "parentOrganization": { "@type": "Organization", "name": "Caterpillar Inc." }
+  },
+  "jobLocation": {
+    "@type": "Place",
+    "address": { "@type": "PostalAddress", "addressLocality": "Nashville", "addressRegion": "TN", "addressCountry": "US" }
+  },
+  "description": "Assigned to a specific department and given at least one project for the duration of the internship. Expected to use analytical skills and work independently, and to prepare and deliver a presentation to management on the project at the end of the summer. Responsibilities vary across IT units and may include programming, development, integration and system administration; project and systems leadership for other team members; complex application and technical problem resolution including off-shift and weekend support calls; independent work on complex processes and modules, or infrastructure component change management; developing major system modules, programs or infrastructure releases from customer requirements; integrated and customer acceptance testing; working knowledge of current programming languages, program design and specification development, programming logic, logic diagrams, system analysis techniques, testing, debugging, documentation standards, file design and storage; integration of in-house developed systems with purchased hardware and software; and assisting customers with documentation, training and usability.",
+  "disambiguatingDescription": "Reproduced inside an independent concept redesign for demonstration. Not a live application route."
 }
 </script>
 
@@ -1755,6 +1964,353 @@ figure.viz>.viz__art svg{display:block;width:100%;height:auto}
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render);
   else render();
+})();
+</script>
+
+<script>
+/* ============================================================================
+   Careers assistant
+   A scripted bot over one posting. The answer for any input is computed
+   synchronously, so CAT.chat.send() returns immediately while the panel
+   renders with a short typing delay. Resume files are read with FileReader
+   and never leave the browser.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var JOB = {
+    id: "2027-IT-INTERN",
+    title: "2027 Summer Intern - Information Technology",
+    employer: "Caterpillar Financial Services Corporation (Cat Financial)",
+    parent: "Caterpillar Inc.",
+    location: "Nashville, Tennessee, United States",
+    employmentType: "INTERN",
+    term: "Summer 2027",
+    anchor: "#job-2027-it-intern",
+    summary: "Assigned to a specific department and given at least one project for the duration of the internship. " +
+             "Expected to use analytical skills and work independently, and to present the project to management at the end of the summer.",
+    responsibilities: [
+      "All programming, development, integration and system administration assignments.",
+      "Project management, programming, systems and system administration leadership, guidance and assistance to other team members.",
+      "More complex application and technical problem identification and resolution, including off-shift and weekend support calls.",
+      "Working independently on complex processes and modules used by one or more programs or systems, or supporting infrastructure component change management.",
+      "Developing major system modules, programs or infrastructure releases from requirements gathered with system customers.",
+      "Integrated testing and customer acceptance testing of system components.",
+      "Working knowledge of current programming languages, program design and specification development, programming logic, logic diagrams, system analysis techniques, testing, debugging, documentation standards, file design, storage and internal systems.",
+      "Integration tasks for in-house developed systems and purchased hardware and software solutions.",
+      "Assisting customers with documentation, training and usability efforts."
+    ],
+    notStated: ["compensation", "housing", "application deadline", "remote or hybrid arrangement", "required degree or year"]
+  };
+
+  var el = {
+    launch: document.getElementById("chat-launch"),
+    panel:  document.getElementById("cat-chat-panel"),
+    log:    document.getElementById("chat-log"),
+    chips:  document.getElementById("chat-chips"),
+    form:   document.getElementById("chat-form"),
+    input:  document.getElementById("chat-input"),
+    file:   document.getElementById("chat-resume"),
+    close:  document.getElementById("chat-close")
+  };
+  if (!el.panel) return;
+
+  var transcript = [];
+  var lastMatch = null;
+  var started = false;
+
+  function esc(t) {
+    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function list(items) {
+    return "<ul>" + items.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>";
+  }
+
+  /* ---------------- rendering ---------------- */
+  function bubble(who, html) {
+    var d = document.createElement("div");
+    d.className = "msg msg--" + who;
+    d.innerHTML = html;
+    el.log.appendChild(d);
+    el.log.scrollTop = el.log.scrollHeight;
+    return d;
+  }
+  function record(who, text) {
+    transcript.push({ from: who, text: String(text).replace(/\s+/g, " ").trim(), at: new Date().toISOString() });
+  }
+  function setChips(items) {
+    el.chips.innerHTML = "";
+    (items || []).forEach(function (label) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = label;
+      b.setAttribute("data-agent-id", "chip-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+      b.setAttribute("data-agent-action", "ask the assistant: " + label);
+      b.addEventListener("click", function () { submit(label); });
+      el.chips.appendChild(b);
+    });
+  }
+  function typing() {
+    var d = bubble("bot", '<span class="typing" role="status" aria-label="Assistant is typing"><i></i><i></i><i></i></span>');
+    return d;
+  }
+  function deliver(res, delay) {
+    var t = typing();
+    setTimeout(function () {
+      t.remove();
+      bubble("bot", res.html);
+      record("assistant", res.text);
+      setChips(res.chips);
+    }, delay === 0 ? 0 : 420);
+  }
+
+  /* ---------------- answers ---------------- */
+  var RULES = [
+    { re: /\b(hi|hello|hey|start|begin)\b/, get: function () { return greet(); } },
+    { re: /\b(resume|cv|match me|upload|my file)\b/, get: function () {
+        return { text: "Upload a PDF with the control at the bottom of this window and I will match it against the open posting. The file is read in your browser and nothing is sent anywhere.",
+                 html: "<p>Upload a PDF with the control at the bottom of this window and I will match it against the open posting.</p><p>The file is read in your browser and nothing is sent anywhere.</p>",
+                 chips: ["What is the role?", "Where is it based?", "How do I apply?"] }; } },
+    { re: /\b(apply|application|applying|submit)\b/, get: function () {
+        return { text: "This demo does not submit applications. The live posting and the application route sit on the Caterpillar careers site, linked from the directory at the bottom of this page.",
+                 html: "<p>This demo does not submit applications.</p><p>The live posting and the application route sit on the Caterpillar careers site. The <a href=\"#directory\">directory</a> at the bottom of this page links straight to job search.</p>",
+                 chips: ["Show me the full posting", "What is the role?"] }; } },
+    { re: /\b(full posting|whole posting|full description|read the posting|show me the posting)\b/, get: function () {
+        return { text: "The full posting is on this page under Careers, at the section titled 2027 Summer Intern, Information Technology. It is also in this document as schema.org JobPosting structured data.",
+                 html: "<p>The full posting is <a href=\"#job-2027-it-intern\">on this page under Careers</a>, and it is also in the source as <code>schema.org/JobPosting</code> structured data so it can be read without opening this window.</p>",
+                 chips: ["What would I do day to day?", "How do I apply?"] }; } },
+    { re: /\b(responsib|duties|day to day|day-to-day|what would i do|tasks)\b/, get: function () {
+        return { text: "Responsibilities vary by IT unit. " + JOB.responsibilities.join(" "),
+                 html: "<p>Responsibilities vary across IT units and may include one or more of these:</p>" + list(JOB.responsibilities.slice(0, 6)) + "<p style=\"margin-top:.5em\"><a href=\"#job-2027-it-intern\">Full list on the page</a>.</p>",
+                 chips: ["What is the project?", "Where is it based?"] }; } },
+    { re: /\b(project|presentation|present)\b/, get: function () {
+        return { text: "You are assigned to a specific department and given at least one project for the length of the internship. At the end of the summer you prepare and deliver a presentation to management on that project.",
+                 html: "<p>You are assigned to a specific department and given at least one project for the length of the internship. You are expected to work independently on it.</p><p>At the end of the summer you prepare and deliver a presentation to management on the project.</p>",
+                 chips: ["What would I do day to day?", "Match my resume"] }; } },
+    { re: /\b(where|location|based|nashville|office|remote|hybrid|onsite)\b/, get: function () {
+        return { text: "The role sits with Cat Financial in Nashville, Tennessee. The posting does not state a remote or hybrid arrangement.",
+                 html: "<p>The role sits with Cat Financial in <b>Nashville, Tennessee</b>. Cat Financial is headquartered there and operates across the Americas, Asia, Australia, Europe and Africa.</p><p>The posting does not state a remote or hybrid arrangement, so that is a question for the recruiter.</p>",
+                 chips: ["What is Cat Financial?", "How do I apply?"] }; } },
+    { re: /\b(pay|salary|compensation|stipend|wage|housing|relocat)\b/, get: function () {
+        return { text: "The posting does not state compensation, housing or relocation. That is a recruiter question.",
+                 html: "<p>The posting does not state compensation, housing or relocation, so I am not going to guess at a number. That one goes to the recruiter.</p>",
+                 chips: ["How do I apply?", "What is the role?"] }; } },
+    { re: /\b(deadline|closing|close|when|timeline|dates|start date)\b/, get: function () {
+        return { text: "The term is Summer 2027. The posting does not state an application deadline or exact start and end dates.",
+                 html: "<p>The term is <b>Summer 2027</b>. The posting does not state an application deadline or the exact start and end dates.</p>",
+                 chips: ["How do I apply?", "Show me the full posting"] }; } },
+    { re: /\b(qualification|requirement|skills|need|experience|eligib|degree|major)\b/, get: function () {
+        return { text: "This posting lists responsibilities rather than a separate requirements section. The technical ground it names is programming and development, integration, system administration, system analysis, testing and debugging, documentation standards, and file design and storage.",
+                 html: "<p>This posting lists responsibilities rather than a separate requirements section. The technical ground it names:</p>" + list(["Programming, development and integration", "System administration and infrastructure change management", "System analysis, testing and debugging", "Documentation standards, file design and storage", "Working independently on complex modules"]) + "<p style=\"margin-top:.5em\">It does not state a required degree, major or year.</p>",
+                 chips: ["Match my resume", "Show me the full posting"] }; } },
+    { re: /\b(cat financial|company|about|who are|subsidiary)\b/, get: function () {
+        return { text: "Cat Financial is a subsidiary of Caterpillar Inc. For more than 40 years it has provided financing to customers and Cat dealers for machines, engines, Solar gas turbines, parts and services. It is headquartered in Nashville, Tennessee.",
+                 html: "<p>Cat Financial is a subsidiary of Caterpillar Inc. For more than 40 years it has provided financing to customers and Cat dealers for machines, engines, Solar gas turbines, genuine Cat parts and services.</p><p>Headquartered in Nashville, Tennessee, with offices across the Americas, Asia, Australia, Europe and Africa.</p>",
+                 chips: ["What is the role?", "Where is it based?"] }; } },
+    { re: /\b(sustainab|climate|emission|environment|green)\b/, get: function () {
+        return { text: "Sustainability is the first section on this page and covers the 2030 goals, the rebuild loop and operations.",
+                 html: "<p><a href=\"#sustainability\">Sustainability</a> is the first section on this page: the 2030 goals, the rebuild loop and operations.</p>",
+                 chips: ["What is the role?", "Match my resume"] }; } },
+    { re: /\b(role|job|intern|posting|position|opening|opportunit)\b/, get: function () { return roleAnswer(); } },
+    { re: /\b(thanks|thank you|cheers|ta)\b/, get: function () {
+        return { text: "Any time.", html: "<p>Any time.</p>", chips: ["Match my resume", "Show me the full posting"] }; } }
+  ];
+
+  function roleAnswer() {
+    return {
+      text: JOB.title + " at " + JOB.employer + ", " + JOB.location + ", " + JOB.term + ". " + JOB.summary,
+      html: "<p><b>" + esc(JOB.title) + "</b><br><span style=\"font-size:.8em;opacity:.75\">Cat Financial &middot; Nashville, Tennessee &middot; Summer 2027</span></p><p>" + esc(JOB.summary) + "</p>",
+      chips: ["What would I do day to day?", "Match my resume", "How do I apply?"]
+    };
+  }
+  function greet() {
+    return {
+      text: "I am a scripted careers assistant for this concept site. One posting is open: the 2027 Summer Intern, Information Technology role at Cat Financial. Upload a PDF resume and I will match it, or ask about the role.",
+      html: "<p>I am a scripted assistant for this concept site, and one posting is open.</p><p>Upload a PDF resume below and I will match it against that posting, or just ask me about the role.</p>",
+      chips: ["Match my resume", "What is the role?", "Where is it based?"]
+    };
+  }
+  function fallback(q) {
+    return {
+      text: "I only know one posting on this demo, the 2027 Summer Intern, Information Technology role at Cat Financial. Try asking about the responsibilities, the location, the project, or upload a resume.",
+      html: "<p>I only know one posting on this demo, so I could not answer that.</p><p>Try the responsibilities, the location, the project, or upload a resume.</p>",
+      chips: ["What is the role?", "What would I do day to day?", "Match my resume"]
+    };
+  }
+
+  function answer(text) {
+    var q = String(text || "").toLowerCase();
+    for (var i = 0; i < RULES.length; i++) if (RULES[i].re.test(q)) return RULES[i].get();
+    return fallback(q);
+  }
+
+  /* ---------------- matching ---------------- */
+  function buildMatch(fileInfo) {
+    var m = {
+      score: 94,
+      verdict: "strong",
+      job: { id: JOB.id, title: JOB.title, employer: JOB.employer, location: JOB.location, term: JOB.term, anchor: JOB.anchor },
+      roleAsksFor: [
+        "Programming, development, integration and system administration",
+        "Working independently on complex processes and modules",
+        "Building system modules from requirements gathered with customers",
+        "Integrated testing and customer acceptance testing",
+        "Documentation, training and usability support",
+        "One project of your own, presented to management at the end of summer"
+      ],
+      demo: true,
+      resumeParsed: false,
+      note: "Demo behaviour: any file with a valid %PDF- header returns this match. Resume contents are not read.",
+      file: fileInfo || null,
+      at: new Date().toISOString()
+    };
+    lastMatch = m;
+    return m;
+  }
+  function matchHtml(m) {
+    var f = m.file;
+    return '<p><b>Strong match.</b> One open posting lines up.</p>' +
+      '<div class="match">' +
+        '<div class="match__top"><span class="match__score">' + m.score + '%</span>' +
+        '<span><b>2027 Summer Intern &mdash; Information Technology</b><br>' +
+        '<span class="match__meta">Cat Financial &middot; Nashville, Tennessee &middot; Summer 2027</span></span></div>' +
+        '<div class="match__body"><div class="match__bar"><i style="width:' + m.score + '%"></i></div>' +
+        '<p style="margin:0 0 .2em;font-size:.83em">What the role asks for:</p>' + list(m.roleAsksFor) +
+        '<p style="margin-top:.7em;font-size:.83em"><a href="#job-2027-it-intern">Read the full posting on this page</a></p></div>' +
+        '<p class="match__demo">' + (f ? esc(f.name) + " &middot; " + f.sizeKB + " KB &middot; PDF " + esc(f.version) + "<br>" : "") +
+        'Demo: every valid PDF returns this match. The file was checked for a %PDF- header and nothing else was read from it. It never left your browser.</p>' +
+      '</div>';
+  }
+
+  function readPdf(file) {
+    return new Promise(function (resolve) {
+      var name = file && file.name ? file.name : "file";
+      var looksPdf = /\.pdf$/i.test(name) || file.type === "application/pdf";
+      var r = new FileReader();
+      r.onload = function () {
+        var head = "";
+        var bytes = new Uint8Array(r.result);
+        for (var i = 0; i < Math.min(bytes.length, 9); i++) head += String.fromCharCode(bytes[i]);
+        var ok = head.indexOf("%PDF-") === 0;
+        resolve({
+          ok: ok || looksPdf,
+          headerValid: ok,
+          name: name,
+          sizeKB: Math.max(1, Math.round((file.size || 0) / 1024)),
+          version: ok ? head.slice(5, 8) : "unknown"
+        });
+      };
+      r.onerror = function () { resolve({ ok: false, headerValid: false, name: name, sizeKB: 0, version: "unknown" }); };
+      r.readAsArrayBuffer(file.slice(0, 16));
+    });
+  }
+
+  function handleFile(file) {
+    if (!file) return Promise.resolve(null);
+    bubble("you", esc(file.name));
+    record("user", "Uploaded " + file.name);
+    var t = typing();
+    return readPdf(file).then(function (info) {
+      t.remove();
+      if (!info.ok) {
+        var bad = "<p>That is not a PDF. This demo only accepts PDF files, so try exporting your resume again.</p>";
+        bubble("bot", bad);
+        record("assistant", "That is not a PDF. This demo only accepts PDF files.");
+        setChips(["What is the role?", "How do I apply?"]);
+        return { error: "not_a_pdf", file: info };
+      }
+      var m = buildMatch(info);
+      bubble("bot", matchHtml(m));
+      record("assistant", "Strong match, 94 percent, to " + JOB.title + " at " + JOB.employer + ", " + JOB.location + ".");
+      setChips(["What would I do day to day?", "Where is it based?", "How do I apply?"]);
+      return m;
+    });
+  }
+
+  /* ---------------- conversation flow ---------------- */
+  function submit(text) {
+    text = String(text || "").trim();
+    if (!text) return null;
+    bubble("you", esc(text));
+    record("user", text);
+    var res = answer(text);
+    deliver(res);
+    return res;
+  }
+
+  function open() {
+    el.panel.hidden = false;
+    el.launch.setAttribute("aria-expanded", "true");
+    if (!started) {
+      started = true;
+      var g = greet();
+      bubble("bot", g.html);
+      record("assistant", g.text);
+      setChips(g.chips);
+    }
+    el.panel.focus();
+    return true;
+  }
+  function close() {
+    el.panel.hidden = true;
+    el.launch.setAttribute("aria-expanded", "false");
+    el.launch.focus();
+    return true;
+  }
+
+  el.launch.addEventListener("click", function () { el.panel.hidden ? open() : close(); });
+  el.close.addEventListener("click", close);
+  el.form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = el.input.value;
+    el.input.value = "";
+    submit(v);
+  });
+  el.file.addEventListener("change", function () { handleFile(el.file.files[0]); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !el.panel.hidden) close();
+  });
+  var fromJob = document.querySelector('[data-agent-id="chat-open-from-job"]');
+  if (fromJob) fromJob.addEventListener("click", function () { open(); submit("Match my resume"); });
+
+  /* ---------------- public API ---------------- */
+  window.CAT = window.CAT || {};
+  window.CAT.chat = {
+    open: open,
+    close: close,
+    isOpen: function () { return !el.panel.hidden; },
+    send: function (text) { if (el.panel.hidden) open(); return submit(text); },
+    transcript: function () { return transcript.slice(); },
+    job: function () { return JSON.parse(JSON.stringify(JOB)); },
+    match: function () { return lastMatch; },
+    simulateMatch: function () {
+      if (el.panel.hidden) open();
+      var m = buildMatch(null);
+      bubble("bot", matchHtml(m));
+      record("assistant", "Strong match, 94 percent, to " + JOB.title + ".");
+      setChips(["What would I do day to day?", "How do I apply?"]);
+      return m;
+    },
+    uploadResume: function (file) { if (el.panel.hidden) open(); return handleFile(file); }
+  };
+
+  var baseHelp = window.CAT.help;
+  if (typeof baseHelp === "function") {
+    window.CAT.help = function () {
+      var h = baseHelp();
+      h.careersChat = {
+        "CAT.chat.open() / close() / isOpen()": "Control the assistant panel.",
+        "CAT.chat.send(text)": "Ask a question. Returns the answer object immediately; the panel renders it after a short typing delay.",
+        "CAT.chat.job()": "The open posting as structured data. Also on the page at #job-2027-it-intern and as schema.org JobPosting.",
+        "CAT.chat.simulateMatch()": "Run the match without uploading a file.",
+        "CAT.chat.uploadResume(File)": "Match a File object. Resolves to the match, or { error: 'not_a_pdf' }.",
+        "CAT.chat.transcript()": "The conversation so far as plain text.",
+        note: "You do not need this widget to read the posting. It is on the page and in JSON-LD."
+      };
+      return h;
+    };
+  }
 })();
 </script>
 
